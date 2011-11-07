@@ -1,0 +1,51 @@
+//node: node code
+
+//Song data base
+SDB = loadLibrary("lib.xspf");
+
+//Node data base
+NDB = loadNodes("nodes");
+
+//Consult data base (to avoid consultation cycles)
+CDB = empty
+
+//Main loop of the node server
+while(true){
+   conn = waitForConnect();
+   thread(process(conn));
+}
+
+processReq(connection c){
+   msj_bytes = getMsj(c); //Get bytes of the message
+   r = genReqObj(msj_bytes); //Turn it into an object
+
+   switch r.type{
+      case CONSULT:
+         result += consultLocalSDB();
+         CDB.atomic_insert(r);
+         //If I haven't seen this particular consult before
+         if(CDB[r] == empty){
+	    sendConsultAck(r);
+	    //For each node except the one that made the consult
+	    for n in (NDB-{r.orig_node}){
+	       result += makeConsult(chgOrigNode(bytes));//<-this needs a timeout
+            }
+	    do{
+	       sendResult(c,result);
+            }
+	    until( timeOut() || getAck() );
+	    CDB = CDB - {r};
+         }
+	 else{
+	    sendConsultAckCycle();
+	 }
+         break;
+      case REACHABLE:
+         //Analog to CONSULT
+      case DOWNLOAD:
+         songId = getSongId(c);
+         data = dumpBytes(SDB,songId);
+	 transferSong(c,data);
+	 break;
+   }
+}
