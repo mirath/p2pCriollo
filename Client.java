@@ -1,4 +1,3 @@
-import java.util.concurrent.*;
 import java.net.*;
 import java.io.*;
 
@@ -10,7 +9,6 @@ public class Client{
     private static String download_filepath = null;
 
     public static void main(String args[]){
-	P2pProtocolHandler p2p_handler = new P2pProtocolHandler();
 	BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 	boolean running = true;
 
@@ -23,8 +21,8 @@ public class Client{
 	    System.out.println("bind_to_server failed, null socket");
 	    System.exit(1);	    	    
 	}
-
-	System.out.println("Cliente listo para recibir ordenes");
+        
+	System.out.println("Cliente listo para recibir o mandar ordenes");
 	while(running){
 	    String command = null;
 	    try{
@@ -36,6 +34,7 @@ public class Client{
 	    }
 	    
 	    switch(command.charAt(0)){
+            // 
 	    case 'C':
 	    case 'c':
 		break;
