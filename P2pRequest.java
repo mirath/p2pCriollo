@@ -1,24 +1,20 @@
 
-import java.net.Socket;
+import java.io.Serializable;
 
-public class P2pRequest{
-    String data;
-    int data_size;
+public class P2pRequest implements Serializable {
     int op_code;
     int hash_id;
-    Socket sock;
+    byte[] data;
 	
     public P2pRequest(){
-	data = "";
 	op_code = 0;
 	hash_id = 0;
-        sock = new Socket();
+        data = null;
     }
 	
-    public P2pRequest(String d, int oc, int hi, Socket sk){
-	data = d;
+    public P2pRequest(int oc, int hi,byte[] d){
 	op_code = oc;
 	hash_id = hi;
-        sock = sk;
+        data = d;
     }
 }
