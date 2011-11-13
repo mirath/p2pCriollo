@@ -1,26 +1,26 @@
 JAVAC = gcj
-OPS = -g
+OPS = -g -C
 LINK_OPS =
-NODE_OBJS = P2pS.o P2pRequest.o P2pProtocolHandler.o ClientRequestThread.o Node.o
+NODE_OBJS = P2pRequest.class P2pProtocolHandler.class ClientRequestThread.class Node.class
 CLIENT_OBJS =
 
 node_server: $(NODE_OBJS)
 	$(JAVAC) --main=Node -o Node $(NODE_OBJS)
 
-Node.o: Node.java
+Node.class: Node.java
 	$(JAVAC) $(OPS) -c Node.java
 
-ClientRequestThread.o: ClientRequestThread.java
+ClientRequestThread.class: ClientRequestThread.java
 	$(JAVAC) $(OPS) -c ClientRequestThread.java
 
-P2pProtocolHandler.o: P2pProtocolHandler.java
+P2pProtocolHandler.class: P2pProtocolHandler.java
 	$(JAVAC) $(OPS) -c P2pProtocolHandler.java
 
-P2pRequest.o: P2pRequest.java
+P2pRequest.class: P2pRequest.java
 	$(JAVAC) $(OPS) -c P2pRequest.java
 
-P2pS.o: P2pS.java
+P2pS.class: P2pS.java
 	$(JAVAC) $(OPS) -c P2pS.java
 
 clean:
-	rm -rf *.o
+	rm -rf *.class *.o

@@ -24,14 +24,14 @@ public class ClientRequestThread extends Thread{
 	P2pRequest request = p2p_handler.getRequest();
 
 	switch(request.op_code){
-	case CONSULT:
+	case 1:
 	    p2p_handler.makeConsult(SongDB,ConsultDB,request);
 	    break;
-	case REACHABLE:
+	case 2:
 	    p2p_handler.makeReachable(NodeDB,ConsultDB,request);
 	    break;
-	case DOWNLOAD:
-	case PLAY:
+	case 3:
+	case 4:
 	    p2p_handler.sendSong(SongDB,request);
 	    break;
 	}
