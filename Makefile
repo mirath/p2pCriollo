@@ -1,7 +1,7 @@
 JAVAC = gcj
 OPS = -g -C
 LINK_OPS =
-NODE_OBJS = CloseSockets.class P2pRequest.class P2pProtocolHandler.class ClientRequestThread.class Node.class
+NODE_OBJS = P2pRequest.class P2pProtocolHandler.class ClientRequestThread.class Node.class
 CLIENT_OBJS = Client.class P2pProtocolHandler.class P2pRequest.class
 
 client: $(CLIENT_OBJS)

@@ -18,6 +18,11 @@ public class Node {
 
 	//Parseo de parámetros
 	set_params(args);
+
+	System.out.println(node_port);
+	System.out.println(node_id);
+	System.out.println(music_library_filepath);
+	System.out.println(known_nodes_filepath);
 	
 	try{
 	    ServerSocket node_socket = new ServerSocket(node_port);	    
