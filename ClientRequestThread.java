@@ -20,8 +20,8 @@ public class ClientRequestThread extends Thread{
     }
 
     public void run(){
-	P2pProtocolHandler p2p_handler = new P2pProtocolHandler(client_socket);
-	P2pRequest request = p2p_handler.getRequest();
+	P2pProtocolHandler p2p_handler = new P2pProtocolHandler();
+	P2pRequest request = p2p_handler.getRequest(client_socket);
 
 	switch(request.op_code){
 	case 1:
