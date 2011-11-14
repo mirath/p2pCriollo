@@ -3,6 +3,10 @@
 Quote
 ServerTest
 Node
+parseXSPF
 *.pdf
 test
 Client
+\#
+.\#
+*.xspf
