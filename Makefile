@@ -1,9 +1,11 @@
 JAVAC = gcj
 OPS = -g -C
 LINK_OPS =
-NODE_OBJS = P2pRequest.class P2pProtocolHandler.class ClientRequestThread.class Node.class
-CLIENT_OBJS = Client.class P2pProtocolHandler.class P2pRequest.class
 NANOXMLPATH = redes/nanoxml/java/nanoxml-lite-2.2.3.jar
+
+PARSER_OBJS = ParseXSPF.class Song.class $(NANOXMLPATH)
+NODE_OBJS = P2pRequest.class P2pProtocolHandler.class ClientRequestThread.class Node.class $(PARSER_OBJS)
+CLIENT_OBJS = Client.class P2pProtocolHandler.class P2pRequest.class ServerRequest.class $(PARSER_OBJS)
 
 all:
 	echo -e 'Uso: make <client|node|parser>'
@@ -14,8 +16,8 @@ client: $(CLIENT_OBJS)
 node: $(NODE_OBJS)
 	$(JAVAC) --main=Node -o Node $(NODE_OBJS)
 
-parser: ParseXSPF.class
-	$(JAVAC) --main=ParseXSPF -o parseXSPF ParseXSPF.class Song.class $(NANOXMLPATH)
+parser: $(PARSER_OBJS)
+	$(JAVAC) --main=ParseXSPF -o parseXSPF $(PARSER_OBJS)
 
 ParseXSPF.class: ParseXSPF.java
 	$(JAVAC) $(OPS) -I .:$(NANOXMLPATH) -c ParseXSPF.java
@@ -29,6 +31,9 @@ Client.class: Client.java
 ClientRequestThread.class: ClientRequestThread.java
 	$(JAVAC) $(OPS) -c ClientRequestThread.java
 
+ServerRequest.class: ServerRequest.java
+	$(JAVAC) $(OPS) -c ServerRequest.java
+
 P2pProtocolHandler.class: P2pProtocolHandler.java
 	$(JAVAC) $(OPS) -c P2pProtocolHandler.java
 
@@ -41,4 +46,4 @@ P2pS.class: P2pS.java
 Song.class: Song.java
 	$(JAVAC) $(OPS) -c Song.java
 clean:
-	rm -rf *.class *.o Node Client
+	rm -rf *.class *.o Node Client parseXSPF
