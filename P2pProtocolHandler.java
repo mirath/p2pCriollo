@@ -4,21 +4,21 @@ import java.net.*;
 import java.util.ArrayList;
 
 public class P2pProtocolHandler{
-    private static byte DOWNLOAD_HEXCODE  = 0x0;
-    private static byte CONSULT_HEXCODE   = 0x1;
-    private static byte REACHABLE_HEXCODE = 0x2;
-    private static byte NULL_HEXCODE      = 0x4;
-    private static int  NULL_HASHID       = 0xffffffff;
+    private final byte DOWNLOAD_HEXCODE  = 0x0;
+    private final byte CONSULT_HEXCODE   = 0x2;
+    private final byte REACHABLE_HEXCODE = 0x3;
+    private final byte NULL_HEXCODE      = 0x4;
+    private final int  NULL_HASHID       = 0xffffffff;
     // Estructuras de control
     private ConcurrentHashMap<String,String> SongDB;
     private static ArrayList<String> NodeDB; 
     private ConcurrentHashMap<Integer,P2pRequest> ConsultDB;
-//    
-//    private static byte S_DOWNLOAD_HEXCODE  = 0x0;
-//    private static byte S_CONSULT_HEXCODE   = 0x1;
-//    private static byte S_REACHABLE_HEXCODE = 0x2;
-//    private static byte S_NULL_HEXCODE      = 0x4;
-//    private static int  S_NULL_HASHID       = 0xffffffff;
+    
+    public P2pProtocolHandler() {
+        SongDB = null;
+        NodeDB = null;
+        ConsultDB = null;
+    }
     
     public P2pProtocolHandler(String knownNodesFilePath, String musicLib){
         ConsultDB = new ConcurrentHashMap<Integer,P2pRequest>();
@@ -82,7 +82,7 @@ public class P2pProtocolHandler{
         byte contenidoMP3[] = new byte[(int) cancion.length()];
         fin.read(contenidoMP3);
         // Preparar P2pRequest con respuesta
-        P2pRequest respuesta = new P2pRequest(0x00,0,contenidoMP3);
+        P2pRequest respuesta = new P2pRequest(NULL_HASHID,0,contenidoMP3);
         // Mandar respuesta al cliente
         ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
         os.writeObject(respuesta);
@@ -96,5 +96,41 @@ public class P2pProtocolHandler{
         catch(IOException e) {
             System.out.println("Error I/O: "+e);
         }
+    }
+    
+    public void requestSong(P2pRequest req, Socket cs){
+        try {
+            // Construir salida hacia el servidor
+            ObjectOutputStream os = new 
+                    ObjectOutputStream(cs.getOutputStream());
+            // Mandar petición al servidor
+            os.writeObject(req);
+            // Ahora esperar respuesta con archivo
+            ObjectInputStream is = new ObjectInputStream(cs.getInputStream());
+            P2pRequest ans = (P2pRequest) is.readObject();
+            // Extraer datos del archivo MP3
+            FileOutputStream fos = new FileOutputStream(
+                    "/home/heraclio/destino/nuevoSaxobeat.mp3");
+            fos.write(ans.data);
+            fos.close();
+            os.close();
+            is.close();
+        }
+        catch(ClassNotFoundException cnfe) {
+            System.out.println("Class not found: "+cnfe);
+        }
+        catch(IOException e) {
+            System.out.println("Error I/O: "+e);
+        }
+        return;
+    }
+    
+    public void requestConsult(P2pRequest req, Socket cs) {
+        
+        return;
+    }
+    
+    public void requestReachable(P2pRequest req, Socket cs) {
+        return;
     }
 }

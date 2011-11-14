@@ -37,6 +37,21 @@ public class Client{
             // 
 	    case 'C':
 	    case 'c':
+                String[] resto = command.split("\\s");
+                // Preparar petición al Nodo
+                client_socket = bind_to_server(node);
+                // Preparar cadena
+                String expr = parseSearchEntry(resto);
+                // Búsqueda por autor ?
+                if (resto[0].compareTo("-a") == 0) {
+                    ServerRequest srv = new ServerRequest(client_socket,
+                            "consult", "A"+expr);
+                }
+                // Búsqueda por título
+                else {
+                    ServerRequest srv = new ServerRequest(client_socket,
+                            "consult", "T"+expr);
+                }
 		break;
 	    case 'D':
 	    case 'd':
@@ -61,6 +76,15 @@ public class Client{
 	    System.out.println("Error cerrando el socket del cliente");
 	    System.exit(1);
 	}
+    }
+    
+    private static String parseSearchEntry(String[] resto) {
+        String expr = new String();
+        for(int i = 1; i < resto.length; i++){
+            expr += resto[i].toLowerCase();
+            expr += " ";
+        }
+        return expr;
     }
 
     private static void set_params(String args[]){
