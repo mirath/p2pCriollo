@@ -1,45 +1,40 @@
-import java.util.concurrent.*;
 import java.net.*;
 import java.io.*;
 
 public class ClientRequestThread extends Thread{
-
-    private ConcurrentHashMap<String,String> SongDB;
-    private ConcurrentHashMap<String,String> NodeDB;
-    private ConcurrentHashMap<Integer,P2pRequest> ConsultDB;
+    private final byte DOWNLOAD_HEXCODE  = 0x0;
+    private final byte CONSULT_HEXCODE   = 0x2;
+    private final byte REACHABLE_HEXCODE = 0x3;
+    private final byte NULL_HEXCODE      = 0x4;
+    private final int  NULL_HASHID       = 0xffffffff;
     private Socket client_socket;
+    private P2pProtocolHandler p2pHandler;
 
-    public ClientRequestThread(Socket cs,
-			       ConcurrentHashMap<String,String> SDB,
-			       ConcurrentHashMap<String,String> NDB,
-			       ConcurrentHashMap<Integer,P2pRequest> CDB){
+    public ClientRequestThread(Socket cs, P2pProtocolHandler p2ph){
 	client_socket = cs;
-	SongDB = SDB;
-	NodeDB = NDB;
-	ConsultDB = CDB;
+        p2pHandler = p2ph;
     }
-
+    
+    @Override
     public void run(){
-	P2pProtocolHandler p2p_handler = new P2pProtocolHandler();
-	P2pRequest request = p2p_handler.getRequest(client_socket);
-
-	switch(request.op_code){
-	case 1:
-	    p2p_handler.makeConsult(SongDB,ConsultDB,request);
-	    break;
-	case 2:
-	    p2p_handler.makeReachable(NodeDB,ConsultDB,request);
-	    break;
-	case 3:
-	case 4:
-	    p2p_handler.sendSong(SongDB,request);
-	    break;
-	}
-
-	try{
+        P2pRequest request = p2pHandler.getRequest(client_socket);
+        
+        switch(request.op_code){
+            case DOWNLOAD_HEXCODE:
+                p2pHandler.sendSong(request, client_socket);
+                break;
+            case CONSULT_HEXCODE:
+                p2pHandler.makeConsult(request, client_socket);
+                break;
+            case REACHABLE_HEXCODE:
+                p2pHandler.makeReachable(request, client_socket);
+                break;
+            case NULL_HASHID:
+        }
+        try{
 	    client_socket.close();
 	}
-	catch(IOException e){}
+	catch(IOException e) {}
 	return;
     }
 }

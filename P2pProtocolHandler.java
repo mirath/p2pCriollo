@@ -1,86 +1,136 @@
 import java.util.concurrent.*;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 public class P2pProtocolHandler{
-    private static byte DOWNLOAD_HEXCODE  = 0x0;
-    private static byte CONSULT_HEXCODE   = 0x1;
-    private static byte REACHABLE_HEXCODE = 0x2;
-    private static byte NULL_HEXCODE      = 0x4;
-    private static int  NULL_HASHID       = 0xffffffff;
-//    
-//    private static byte S_DOWNLOAD_HEXCODE  = 0x0;
-//    private static byte S_CONSULT_HEXCODE   = 0x1;
-//    private static byte S_REACHABLE_HEXCODE = 0x2;
-//    private static byte S_NULL_HEXCODE      = 0x4;
-//    private static int  S_NULL_HASHID       = 0xffffffff;
+    private final byte DOWNLOAD_HEXCODE  = 0x0;
+    private final byte CONSULT_HEXCODE   = 0x2;
+    private final byte REACHABLE_HEXCODE = 0x3;
+    private final byte NULL_HEXCODE      = 0x4;
+    private final int  NULL_HASHID       = 0xffffffff;
+    // Estructuras de control
+    private ConcurrentHashMap<String,String> SongDB;
+    private static ArrayList<String> NodeDB; 
+    private ConcurrentHashMap<Integer,P2pRequest> ConsultDB;
     
-//    public P2pRequest getRequest(Socket client_socket){
-//        BufferedReader in = null;
-//        PrintWriter out = null;
-//        int header = 0;
-//        int op_code = 0;
-//        int hash_id = 0;
-//        int data_size = 0;
-//        try{
-//            // Inicialización de buffers.
-//            in = new BufferedReader(new InputStreamReader( client_socket.getInputStream()));
-//            out = new PrintWriter(client_socket.getOutputStream(), true);
-//            //Se lee el header
-//            header = in.read();
-//            header = header << 16;
-//            header += in.read();
-//            op_code = header ^ 0xc0000000;
-//            hash_id = header ^ 0x3fffffff;
-//            data_size = in.read();
-//            data_size = data_size <<16;
-//            data_size += in.read();
-//        }
-//        catch(IOException e){}
-//        
-//        return new P2pRequest(null,op_code,hash_id);
-//    }
+    public P2pProtocolHandler() {
+        SongDB = null;
+        NodeDB = null;
+        ConsultDB = null;
+    }
     
-    public void makeConsult(ConcurrentMap<String,String> SongDB,
-            ConcurrentMap<Integer,P2pRequest> ConsultDB,
-            P2pRequest req){
+    public P2pProtocolHandler(String knownNodesFilePath, String musicLib){
+        ConsultDB = new ConcurrentHashMap<Integer,P2pRequest>();
+        NodeDB = parseKnownNodesFile(knownNodesFilePath);
+        SongDB = parseSongFile(musicLib);
+    }
+    
+    private ConcurrentHashMap<String,String> parseSongFile(String musicLib){
+        // Parser de Germán.
+        ConcurrentHashMap<String,String> dummy = new ConcurrentHashMap
+                <String,String>();
+        return dummy;
+    }
+    
+    private ArrayList<String> parseKnownNodesFile(String knownNodesFilePath){
+        ArrayList<String> Nodes = new ArrayList<String>(); 
+        try {
+        BufferedReader nodeFile = new BufferedReader(new
+                FileReader(knownNodesFilePath));
+        String line;
+        while ((line = nodeFile.readLine()) != null)
+            Nodes.add(line);
+        }
+        catch(FileNotFoundException fnf) {
+            System.out.println("Error al abrir archivo "
+                    +knownNodesFilePath+" :"+fnf);
+        }
+        catch(IOException e){}
+        return Nodes;
+    }
+    
+    public P2pRequest getRequest(Socket s) {
+        P2pRequest req = null;
+        try {
+            // Preparar para leer datos
+            ObjectInputStream is = new ObjectInputStream(s.getInputStream());
+            req = (P2pRequest) is.readObject();
+        }
+        catch (ClassNotFoundException csnf) {
+            System.out.println("Error: "+csnf);
+        }
+        catch (IOException e ) {}
+        return req;
+    }
+    
+    public void makeConsult(P2pRequest req, Socket cs){
         
     }
     
-    public void makeReachable(ConcurrentMap<String,String> NodeDB,
-            ConcurrentMap<Integer,P2pRequest> ConsultDB,
-            P2pRequest req){}
+    public void makeReachable(P2pRequest req, Socket cs){}
     
-    public void sendSong(ConcurrentMap<String,String> SongDB,P2pRequest req) {
-//        BufferedReader in = null;
-//        OutputStream out = null;
-//        Socket client_socket = req.sock;
-//        try {
-//            // Crear buffers
-//            in = new BufferedReader(new InputStreamReader( 
-//                    client_socket.getInputStream()));
-//            out = client_socket.getOutputStream();
-//            // Obtener información acerca de la canción.
-//            // De cuántos bytes es el string nombre ?
-//            int nReads = req.data_size/2;
-//            char[] buff = new char[nReads];
-//            in.read(buff, 0, nReads);
-//            String songName = new String(buff);
-//            // Buscar canción en base de datos
-//            String fileName = SongDB.get(songName);
-//            File songFile = new File(fileName);
-//            // Preparar buffer para leer archivo
-//            FileInputStream fin = new FileInputStream(songFile);
-//            byte fileContent[] = new byte[(int)songFile.length()];
-//            // Leer archivo
-//            fin.read(fileContent);
-//            out.write(fileContent);
-//        }
-//        catch (FileNotFoundException fnf) {
-//            System.out.println("Archivo no encontrado: " + fnf);
-//        }
-//        catch (IOException e) {
-//            System.out.println("Error de I/O: " + e);
-//        }
+    public void sendSong(P2pRequest req, Socket cs) {
+        // Nombre de archivo ?
+        String nombreMP3 = new String(req.data);
+        // Buscar en SongDB
+        String rutaArchivo = SongDB.get(nombreMP3);
+        // Cargar archivo
+        try {
+        File cancion = new File(rutaArchivo);
+        FileInputStream fin = new FileInputStream(cancion);
+        byte contenidoMP3[] = new byte[(int) cancion.length()];
+        fin.read(contenidoMP3);
+        // Preparar P2pRequest con respuesta
+        P2pRequest respuesta = new P2pRequest(NULL_HASHID,0,contenidoMP3);
+        // Mandar respuesta al cliente
+        ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+        os.writeObject(respuesta);
+        os.close();
+        fin.close();
+        }
+        catch(FileNotFoundException fnf) {
+            System.out.println("Error: "+fnf);
+        }
+        catch(NullPointerException nl) {}
+        catch(IOException e) {
+            System.out.println("Error I/O: "+e);
+        }
+    }
+    
+    public void requestSong(P2pRequest req, Socket cs){
+        try {
+            // Construir salida hacia el servidor
+            ObjectOutputStream os = new 
+                    ObjectOutputStream(cs.getOutputStream());
+            // Mandar petición al servidor
+            os.writeObject(req);
+            // Ahora esperar respuesta con archivo
+            ObjectInputStream is = new ObjectInputStream(cs.getInputStream());
+            P2pRequest ans = (P2pRequest) is.readObject();
+            // Extraer datos del archivo MP3
+            FileOutputStream fos = new FileOutputStream(
+                    "/home/heraclio/destino/nuevoSaxobeat.mp3");
+            fos.write(ans.data);
+            fos.close();
+            os.close();
+            is.close();
+        }
+        catch(ClassNotFoundException cnfe) {
+            System.out.println("Class not found: "+cnfe);
+        }
+        catch(IOException e) {
+            System.out.println("Error I/O: "+e);
+        }
+        return;
+    }
+    
+    public void requestConsult(P2pRequest req, Socket cs) {
+        
+        return;
+    }
+    
+    public void requestReachable(P2pRequest req, Socket cs) {
+        return;
     }
 }

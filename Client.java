@@ -1,4 +1,3 @@
-import java.util.concurrent.*;
 import java.net.*;
 import java.io.*;
 
@@ -10,7 +9,6 @@ public class Client{
     private static String download_filepath = null;
 
     public static void main(String args[]){
-	P2pProtocolHandler p2p_handler = new P2pProtocolHandler();
 	BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 	boolean running = true;
 
@@ -23,8 +21,8 @@ public class Client{
 	    System.out.println("bind_to_server failed, null socket");
 	    System.exit(1);	    	    
 	}
-
-	System.out.println("Cliente listo para recibir ordenes");
+        
+	System.out.println("Cliente listo para recibir o mandar ordenes");
 	while(running){
 	    String command = null;
 	    try{
@@ -36,8 +34,24 @@ public class Client{
 	    }
 	    
 	    switch(command.charAt(0)){
+            // 
 	    case 'C':
 	    case 'c':
+                String[] resto = command.split("\\s");
+                // Preparar petición al Nodo
+                client_socket = bind_to_server(node);
+                // Preparar cadena
+                String expr = parseSearchEntry(resto);
+                // Búsqueda por autor ?
+                if (resto[0].compareTo("-a") == 0) {
+                    ServerRequest srv = new ServerRequest(client_socket,
+                            "consult", "A"+expr);
+                }
+                // Búsqueda por título
+                else {
+                    ServerRequest srv = new ServerRequest(client_socket,
+                            "consult", "T"+expr);
+                }
 		break;
 	    case 'D':
 	    case 'd':
@@ -62,6 +76,15 @@ public class Client{
 	    System.out.println("Error cerrando el socket del cliente");
 	    System.exit(1);
 	}
+    }
+    
+    private static String parseSearchEntry(String[] resto) {
+        String expr = new String();
+        for(int i = 1; i < resto.length; i++){
+            expr += resto[i].toLowerCase();
+            expr += " ";
+        }
+        return expr;
     }
 
     private static void set_params(String args[]){
