@@ -17,6 +17,7 @@ public class ClientRequestThread extends Thread{
     
     @Override
     public void run(){
+	System.out.println("Servidor procesando request de un cliente");//flag
         P2pRequest request = p2pHandler.getRequest(client_socket);
         
         switch(request.op_code){
@@ -35,6 +36,9 @@ public class ClientRequestThread extends Thread{
 	    client_socket.close();
 	}
 	catch(IOException e) {}
+
+	System.out.println("Request procesado");//flag
+	System.out.println("");//flag
 	return;
     }
 }

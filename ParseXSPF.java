@@ -48,8 +48,9 @@ public class ParseXSPF{
 			get_xspf_attr(attr,s);
 		    }
 		    //sl.add(s);
-		    sl.put(s.title +"-"+ s.creator,s.title +"-"+ s.creator +"-"+ s.location);
-		    //System.out.println(s.location +"||"+ s.title +"||"+ s.creator);
+		    sl.put(s.title +"-"+ s.creator,s.location);
+		    //System.out.println("parser:"+s.title +"-"+ s.creator);//flag
+		    //System.out.println(sl.get(s.title +"-"+ s.creator));//flag
 		}
 	    }
 	    else{

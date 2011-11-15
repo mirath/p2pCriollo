@@ -20,6 +20,7 @@ public class Node {
         // System.out.println(known_nodes_filepath);
         
         try{
+	    System.out.println("Servidor "+node_id+" estableciendo puerto de escucha");//flag
             ServerSocket node_socket = new ServerSocket(node_port);
             Socket client_socket = null;
             
@@ -34,6 +35,7 @@ public class Node {
                     new P2pProtocolHandler(known_nodes_filepath,
                             music_library_filepath);
             
+	    System.out.println("Servidor "+node_id+" listo para recibir ordenes");//flag
             //Loop principal del servidor
             while(true){
                 client_socket = node_socket.accept();

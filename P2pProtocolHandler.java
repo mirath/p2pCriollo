@@ -27,10 +27,7 @@ public class P2pProtocolHandler{
     }
     
     private ConcurrentHashMap<String,String> parseSongFile(String musicLib){
-        SongDB = ParseXSPF.parse(musicLib);
-        ConcurrentHashMap<String,String> dummy = new ConcurrentHashMap
-                <String,String>();
-        return dummy;
+        return ParseXSPF.parse(musicLib);
     }
     
     private ArrayList<String> parseKnownNodesFile(String knownNodesFilePath){
@@ -75,6 +72,8 @@ public class P2pProtocolHandler{
         String nombreMP3 = new String(req.data);
         // Buscar en SongDB
         String rutaArchivo = SongDB.get(nombreMP3);
+	//System.out.println("'"+nombreMP3+"'"); //flag
+	//System.out.println(rutaArchivo); //flag
         // Cargar archivo
         try {
         File cancion = new File(rutaArchivo);
@@ -105,8 +104,7 @@ public class P2pProtocolHandler{
 	}
         try {
             // Construir salida hacia el servidor
-            ObjectOutputStream os = new 
-                    ObjectOutputStream(cs.getOutputStream());
+            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
             // Mandar petición al servidor
             os.writeObject(req);
             // Ahora esperar respuesta con archivo
