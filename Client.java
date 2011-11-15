@@ -36,20 +36,28 @@ public class Client{
 		client_socket = bind_to_server(node);
 
 		String[] resto = command.split("\\s");
-	        // Preparar petición al Nodo
-	        client_socket = bind_to_server(node);
+                String ans = null;
 	        // Preparar cadena
 	        String expr = parseSearchEntry(resto);
 	   	// Búsqueda por autor ?
 		if (resto[0].compareTo("-a") == 0) {
-			ServerRequest srv = new ServerRequest(client_socket,
-							      "consult", "A"+expr);
+			ServerRequest srv = new ServerRequest(client_socket, 
+                                node_port, node, "consult", "A"+expr,
+                                download_path);
 		}
 		// Búsqueda por título
-		else {
-			ServerRequest srv = new ServerRequest(client_socket,
-							      "consult", "T"+expr);
+                else if (resto[0].compareTo("-t") == 0) {
+			ServerRequest srv = new ServerRequest(client_socket, 
+                                node_port,node, "consult", "T"+expr, 
+                                download_path); 
 		}
+                else {   // Búsqueda de todos los archivos
+                    ServerRequest srv = new ServerRequest(client_socket, 
+                                node_port,node, "consult", "A", 
+                                download_path);
+                    ans = srv.run();
+                    // Parsear respuesta
+                }
 
 		try{
 		    client_socket.close();
@@ -68,7 +76,11 @@ public class Client{
 	    case 'd':
 		client_socket = bind_to_server(node);
 
-		svr = new ServerRequest(client_socket,"download","Moulin Rouge-Mireille Mathieu",download_path);
+		// svr = new ServerRequest(client_socket, node_port, 
+                //         node, "download", "one.mp3",download_path);
+		svr = new ServerRequest(client_socket,node_port,node,
+					"download","Moulin Rouge-Mireille Mathieu",download_path);
+
 	        svr.run();
 
 		try{
@@ -84,8 +96,9 @@ public class Client{
 	    case 'P':
 	    case 'p':
 		client_socket = bind_to_server(node);
-
-		svr = new ServerRequest(client_socket,"download","Moulin Rouge-Mireille Mathieu",download_path);
+	    
+	        svr = new ServerRequest(client_socket,node_port,
+					node,"download","Moulin Rouge-Mireille Mathieu",download_path);
 	        svr.run();
 		try{
 		    Runtime.getRuntime().exec(new String[]{"vlc","Moulin Rouge-Mireille Mathieu.mp3"});
@@ -147,7 +160,6 @@ public class Client{
 	    System.exit(1);	    
 	}
     }
-
     private static Socket bind_to_server(String node_addr){
 	InetAddress addr;
 	Socket s = null;

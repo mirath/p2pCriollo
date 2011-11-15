@@ -126,9 +126,25 @@ public class P2pProtocolHandler{
         return;
     }
     
-    public void requestConsult(P2pRequest req, Socket cs) {
-        
-        return;
+    public String requestConsult(P2pRequest req, Socket cs) {
+        String result = null;
+        // Contruir salida hacia el servidor
+        try {
+            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            // Mandar petición al servidor
+            os.writeObject(req);
+            // Ahora esperar respuesta con archivo
+            ObjectInputStream is = new ObjectInputStream(cs.getInputStream());
+            P2pRequest ans = (P2pRequest) is.readObject();
+            result = new String(ans.data);
+        }
+        catch(ClassNotFoundException cnfe) {
+            System.out.println("Class not found: "+cnfe);
+        }
+        catch(IOException e) {
+            System.out.println("Error I/O: "+e);
+        }
+        return result;
     }
     
     public void requestReachable(P2pRequest req, Socket cs) {
