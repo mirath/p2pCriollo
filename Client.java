@@ -11,17 +11,17 @@ public class Client{
     private static List<Song> current_song_list;
     private static P2pProtocolHandler p2pHandler = new P2pProtocolHandler();
 
+
     public static void main(String args[]){
 	BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 	boolean running = true;
-
-	System.out.println("Espere, realizando conexion al servidor...");
 
 	set_params(args);
         
 	System.out.println("Cliente listo para recibir o mandar ordenes");
 	while(running){
 	    String command = null;
+	    ServerRequest svr = null;
 	    try{
 		command = console.readLine();
 		command.trim();
@@ -31,9 +31,10 @@ public class Client{
 	    }
 	    
 	    switch(command.charAt(0)){
-		// 
 	    case 'C':
 	    case 'c':
+		client_socket = bind_to_server(node);
+
 		String[] resto = command.split("\\s");
                 String ans = null;
 	        // Preparar cadena
@@ -57,15 +58,56 @@ public class Client{
                     ans = srv.run();
                     // Parsear respuesta
                 }
-	    break;
-	    case 'D':
-	    case 'd':
-		ServerRequest svr = new ServerRequest(client_socket, node_port, 
-                        node, "download", "one.mp3",download_path);
-	        svr.run();
-	    break;
+
+		try{
+		    client_socket.close();
+		}
+		catch(IOException e){
+		    System.out.println("Error cerrando el socket del cliente");
+		    System.exit(1);
+		}
+
+		close_socket(client_socket);
+		break;
 	    case 'A':
 	    case 'a':
+		break;
+	    case 'D':
+	    case 'd':
+		client_socket = bind_to_server(node);
+
+		// svr = new ServerRequest(client_socket, node_port, 
+                //         node, "download", "one.mp3",download_path);
+		svr = new ServerRequest(client_socket,node_port,node,
+					"download","Moulin Rouge-Mireille Mathieu",download_path);
+
+	        svr.run();
+
+		try{
+		    client_socket.close();
+		}
+		catch(IOException e){
+		    System.out.println("Error cerrando el socket del cliente");
+		    System.exit(1);
+		}
+
+		close_socket(client_socket);
+		break;
+	    case 'P':
+	    case 'p':
+		client_socket = bind_to_server(node);
+	    
+	        svr = new ServerRequest(client_socket,node_port,
+					node,"download","Moulin Rouge-Mireille Mathieu",download_path);
+	        svr.run();
+		try{
+		    Runtime.getRuntime().exec(new String[]{"vlc","Moulin Rouge-Mireille Mathieu.mp3"});
+		}
+		catch(IOException e){
+		    System.out.println("I/O Error: "+e);
+		}
+
+		close_socket(client_socket);
 		break;
 	    case 'Q':
 	    case 'q':
@@ -118,4 +160,40 @@ public class Client{
 	    System.exit(1);	    
 	}
     }
+    private static Socket bind_to_server(String node_addr){
+	InetAddress addr;
+	Socket s = null;
+
+	System.out.println("Espere, realizando conexion al servidor...");
+
+	try{
+	    addr = InetAddress.getByName(node_addr);
+	    s = new Socket(addr,node_port);
+	}
+	catch(UnknownHostException e){
+	    System.out.println("Host "+node_addr+" no encontrado");
+	    System.exit(1);
+	}
+	catch(SecurityException e){
+	    System.out.println("SecurityException");
+	    System.exit(1);
+	}
+	catch(IOException e){
+	    System.out.println("Error creando el socket");
+	    System.exit(1);
+	}
+
+	System.out.println("Conexion realizada");
+	return s;
+    }
+
+    private static void close_socket(Socket client_socket){
+	try{
+	    client_socket.close();
+	}
+	catch(IOException e){
+	    System.out.println("Error cerrando el socket del cliente");
+	    System.exit(1);
+	}
+    }   
 }
