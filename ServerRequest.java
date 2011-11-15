@@ -22,7 +22,7 @@ public class ServerRequest {
         this.data = data.getBytes();
     }
     
-    public ServerRequest(Socket cs, int nodePort, String node, String operation, 
+    public ServerRequest(Socket cs, int nodePort, String node, String operation,
             String data, String download_path){
         client_socket = bind_to_server(node, nodePort);
         this.operation = operation;
@@ -45,7 +45,7 @@ public class ServerRequest {
         else if (operation.compareTo("consult") == 0) {
             // Construir request
             Random gen = new Random();
-            String hash = Integer.toString(gen.nextInt()) + 
+            String hash = Integer.toString(gen.nextInt()) +
                     client_socket.getInetAddress().getHostAddress() +
                     System.currentTimeMillis();
             req = new P2pRequest(CONSULT_HEXCODE,hash.hashCode(),data);
@@ -56,12 +56,7 @@ public class ServerRequest {
             req = new P2pRequest(REACHABLE_HEXCODE,NULL_HASHID,null);
             h.requestReachable(req, client_socket);
         }
-        try {
-            client_socket.close();
-        }
-        catch(IOException e) {
-            System.out.println("No se pudo cerrar el socket: "+e);
-        }
+        close_socket(client_socket);
         return ans;
     }
     
@@ -87,5 +82,15 @@ public class ServerRequest {
         }
         
         return s;
+    }
+    
+    private static void close_socket(Socket client_socket){
+        try{
+            client_socket.close();
+        }
+        catch(IOException e){
+            System.out.println("Error cerrando el socket del cliente");
+            System.exit(1);
+        }
     }
 }
