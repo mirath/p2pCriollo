@@ -77,17 +77,17 @@ public class P2pProtocolHandler{
         String rutaArchivo = SongDB.get(nombreMP3);
         // Cargar archivo
         try {
-        File cancion = new File(rutaArchivo);
-        FileInputStream fin = new FileInputStream(cancion);
-        byte contenidoMP3[] = new byte[(int) cancion.length()];
-        fin.read(contenidoMP3);
-        // Preparar P2pRequest con respuesta
-        P2pRequest respuesta = new P2pRequest(NULL_HASHID,0,contenidoMP3);
-        // Mandar respuesta al cliente
-        ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
-        os.writeObject(respuesta);
-        os.close();
-        fin.close();
+	    File cancion = new File(rutaArchivo);
+	    FileInputStream fin = new FileInputStream(cancion);
+	    byte contenidoMP3[] = new byte[(int) cancion.length()];
+	    fin.read(contenidoMP3);
+	    // Preparar P2pRequest con respuesta
+	    P2pRequest respuesta = new P2pRequest(NULL_HASHID,0,contenidoMP3);
+	    // Mandar respuesta al cliente
+	    ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+	    os.writeObject(respuesta);
+	    os.close();
+	    fin.close();
         }
         catch(FileNotFoundException fnf) {
             System.out.println("Error: "+fnf);
@@ -113,7 +113,7 @@ public class P2pProtocolHandler{
             ObjectInputStream is = new ObjectInputStream(cs.getInputStream());
             P2pRequest ans = (P2pRequest) is.readObject();
             // Extraer datos del archivo MP3
-            FileOutputStream fos = new FileOutputStream(download_path);
+            FileOutputStream fos = new FileOutputStream(download_path+"/"+new String(req.data)+".mp3");
             fos.write(ans.data);
             fos.close();
             os.close();

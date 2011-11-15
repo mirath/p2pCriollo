@@ -34,7 +34,10 @@ public class ServerRequest {
         if (operation.compareTo("download") == 0){
             // Contruir request
             req = new P2pRequest(DOWNLOAD_HEXCODE,NULL_HASHID,data);
+	    String songname = new String(req.data);
+	    System.out.println("Descargando "+songname+"...");
             h.requestSong(req, download_path, client_socket);
+	    System.out.println("Cancion "+songname+" descargada");
         }
         else if (operation.compareTo("consult") == 0) {
             // Construir request
