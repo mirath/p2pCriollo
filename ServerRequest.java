@@ -1,6 +1,7 @@
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Random;
 
 public class ServerRequest {
     private final byte DOWNLOAD_HEXCODE  = 0x0;
@@ -15,34 +16,39 @@ public class ServerRequest {
     byte[] data;
     
     public ServerRequest(Socket cs, String operation, String data){
-	client_socket = cs;
+        client_socket = cs;
         this.operation = operation;
         req = null;
         this.data = data.getBytes();
     }
-
-    public ServerRequest(Socket cs, String operation, String data, String download_path){
-	client_socket = cs;
+    
+    public ServerRequest(Socket cs, int nodePort, String node, String operation, 
+            String data, String download_path){
+        client_socket = bind_to_server(node, nodePort);
         this.operation = operation;
         req = null;
         this.data = data.getBytes();
-	this.download_path = download_path;
+        this.download_path = download_path;
     }
-
-    public void run(){
+    
+    public String run(){
+        String ans = null;
         P2pProtocolHandler h = new P2pProtocolHandler();
         if (operation.compareTo("download") == 0){
             // Contruir request
             req = new P2pRequest(DOWNLOAD_HEXCODE,NULL_HASHID,data);
-	    String songname = new String(req.data);
-	    System.out.println("Descargando "+songname+"...");
+            String songname = new String(req.data);
+            System.out.println("Descargando "+songname+"...");
             h.requestSong(req, download_path, client_socket);
-	    System.out.println("Cancion "+songname+" descargada");
+            System.out.println("Cancion "+songname+" descargada");
         }
         else if (operation.compareTo("consult") == 0) {
             // Construir request
-            req = new P2pRequest(CONSULT_HEXCODE,NULL_HASHID,data);
-            h.requestConsult(req, client_socket);
+            Random gen = new Random();
+            String hash = Integer.toString(gen.nextInt()) + 
+                    client_socket.getInetAddress().getHostAddress();
+            req = new P2pRequest(CONSULT_HEXCODE,hash.hashCode(),data);
+            ans = h.requestConsult(req, client_socket);
         }
         else if (operation.compareTo("reachable") == 0) {
             // Construir request
@@ -55,6 +61,30 @@ public class ServerRequest {
         catch(IOException e) {
             System.out.println("No se pudo cerrar el socket: "+e);
         }
-	return;
+        return ans;
+    }
+    
+    private static Socket bind_to_server(String node_addr, int node_port){
+        InetAddress addr;
+        Socket s = null;
+        
+        try{
+            addr = InetAddress.getByName(node_addr);
+            s = new Socket(addr,node_port);
+        }
+        catch(UnknownHostException e){
+            System.out.println("Host "+node_addr+" no encontrado");
+            System.exit(1);
+        }
+        catch(SecurityException e){
+            System.out.println("SecurityException");
+            System.exit(1);
+        }
+        catch(IOException e){
+            System.out.println("Error creando el socket");
+            System.exit(1);
+        }
+        
+        return s;
     }
 }

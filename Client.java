@@ -19,11 +19,11 @@ public class Client{
 
 	set_params(args);
 
-	client_socket = bind_to_server(node);
-	if(client_socket == null){
-	    System.out.println("bind_to_server failed, null socket");
-	    System.exit(1);	    	    
-	}
+//	client_socket = bind_to_server(node);
+//	if(client_socket == null){
+//	    System.out.println("bind_to_server failed, null socket");
+//	    System.exit(1);	    	    
+//	}
         
 	System.out.println("Cliente listo para recibir o mandar ordenes");
 	while(running){
@@ -41,24 +41,33 @@ public class Client{
 	    case 'C':
 	    case 'c':
 		String[] resto = command.split("\\s");
-	        // Preparar petición al Nodo
-	        client_socket = bind_to_server(node);
+                String ans = null;
 	        // Preparar cadena
 	        String expr = parseSearchEntry(resto);
 	   	// Búsqueda por autor ?
 		if (resto[0].compareTo("-a") == 0) {
-			ServerRequest srv = new ServerRequest(client_socket,
-							      "consult", "A"+expr);
+			ServerRequest srv = new ServerRequest(client_socket, 
+                                node_port, node, "consult", "A"+expr,
+                                download_path);
 		}
 		// Búsqueda por título
-		else {
-			ServerRequest srv = new ServerRequest(client_socket,
-							      "consult", "T"+expr);
+                else if (resto[0].compareTo("-t") == 0) {
+			ServerRequest srv = new ServerRequest(client_socket, 
+                                node_port,node, "consult", "T"+expr, 
+                                download_path); 
 		}
+                else {   // Búsqueda de todos los archivos
+                    ServerRequest srv = new ServerRequest(client_socket, 
+                                node_port,node, "consult", "A", 
+                                download_path);
+                    ans = srv.run();
+                    // Parsear respuesta
+                }
 	    break;
 	    case 'D':
 	    case 'd':
-		ServerRequest svr = new ServerRequest(client_socket,"download","One-Metallica",download_path);
+		ServerRequest svr = new ServerRequest(client_socket, node_port, 
+                        node, "download", "one.mp3",download_path);
 	        svr.run();
 	    break;
 	    case 'A':
@@ -74,13 +83,13 @@ public class Client{
 	    }
 	}
 	
-	try{
-	    client_socket.close();
-	}
-	catch(IOException e){
-	    System.out.println("Error cerrando el socket del cliente");
-	    System.exit(1);
-	}
+//	try{
+//	    client_socket.close();
+//	}
+//	catch(IOException e){
+//	    System.out.println("Error cerrando el socket del cliente");
+//	    System.exit(1);
+//	}
     }
     
     private static String parseSearchEntry(String[] resto) {
@@ -122,29 +131,5 @@ public class Client{
 	    System.out.println("Uso: Cliente -p <puerto> -n <nodo> [-d <directorio de descargas>]");
 	    System.exit(1);	    
 	}
-    }
-
-    private static Socket bind_to_server(String node_addr){
-	InetAddress addr;
-	Socket s = null;
-
-	try{
-	    addr = InetAddress.getByName(node_addr);
-	    s = new Socket(addr,node_port);
-	}
-	catch(UnknownHostException e){
-	    System.out.println("Host "+node_addr+" no encontrado");
-	    System.exit(1);
-	}
-	catch(SecurityException e){
-	    System.out.println("SecurityException");
-	    System.exit(1);
-	}
-	catch(IOException e){
-	    System.out.println("Error creando el socket");
-	    System.exit(1);
-	}
-	
-	return s;
     }
 }
