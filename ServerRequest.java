@@ -46,7 +46,8 @@ public class ServerRequest {
             // Construir request
             Random gen = new Random();
             String hash = Integer.toString(gen.nextInt()) + 
-                    client_socket.getInetAddress().getHostAddress();
+                    client_socket.getInetAddress().getHostAddress() +
+                    System.currentTimeMillis();
             req = new P2pRequest(CONSULT_HEXCODE,hash.hashCode(),data);
             ans = h.requestConsult(req, client_socket);
         }

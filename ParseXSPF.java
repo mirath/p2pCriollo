@@ -1,6 +1,5 @@
 import nanoxml.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.io.*;
 
 public class ParseXSPF{
@@ -14,9 +13,9 @@ public class ParseXSPF{
     }
 
     //public static Song[] parse(String filename){
-    public static ConcurrentHashMap<String,String> parse(String filename){
+    public static HashMap<String,Song> parse(String filename){
 	//LinkedList<Song> sl = new LinkedList<Song>();
-	ConcurrentHashMap<String,String> sl = new ConcurrentHashMap<String,String>();
+	HashMap<String,Song> sl = new HashMap<String,Song>();
 
 	try{
 	    XMLElement xspf = new XMLElement();
@@ -48,7 +47,7 @@ public class ParseXSPF{
 			get_xspf_attr(attr,s);
 		    }
 		    //sl.add(s);
-		    sl.put(s.title +"-"+ s.creator,s.location);
+		    sl.put(s.title+"-"+s.creator,s);
 		    //System.out.println("parser:"+s.title +"-"+ s.creator);//flag
 		    //System.out.println(sl.get(s.title +"-"+ s.creator));//flag
 		}

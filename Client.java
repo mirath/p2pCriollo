@@ -18,12 +18,6 @@ public class Client{
 	System.out.println("Espere, realizando conexion al servidor...");
 
 	set_params(args);
-
-//	client_socket = bind_to_server(node);
-//	if(client_socket == null){
-//	    System.out.println("bind_to_server failed, null socket");
-//	    System.exit(1);	    	    
-//	}
         
 	System.out.println("Cliente listo para recibir o mandar ordenes");
 	while(running){
@@ -58,7 +52,7 @@ public class Client{
 		}
                 else {   // Búsqueda de todos los archivos
                     ServerRequest srv = new ServerRequest(client_socket, 
-                                node_port,node, "consult", "A", 
+                                node_port,node, "consult", "W", 
                                 download_path);
                     ans = srv.run();
                     // Parsear respuesta
@@ -82,14 +76,6 @@ public class Client{
 		break;
 	    }
 	}
-	
-//	try{
-//	    client_socket.close();
-//	}
-//	catch(IOException e){
-//	    System.out.println("Error cerrando el socket del cliente");
-//	    System.exit(1);
-//	}
     }
     
     private static String parseSearchEntry(String[] resto) {

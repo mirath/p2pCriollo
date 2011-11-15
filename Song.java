@@ -10,4 +10,11 @@ public class Song{
     }
 
     public Song(){}
+    
+    @Override
+    public String toString() {
+        String resp = creator+"@@"+title;
+        return resp;
+    }
+            
 }

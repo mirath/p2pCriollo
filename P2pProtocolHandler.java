@@ -2,42 +2,50 @@ import java.util.concurrent.*;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class P2pProtocolHandler{
-    private final byte DOWNLOAD_HEXCODE  = 0x0;
-    private final byte CONSULT_HEXCODE   = 0x2;
-    private final byte REACHABLE_HEXCODE = 0x3;
-    private final byte NULL_HEXCODE      = 0x4;
+//    private final byte DOWNLOAD_HEXCODE  = 0x0;
+//    private final byte CONSULT_HEXCODE   = 0x2;
+//    private final byte REACHABLE_HEXCODE = 0x3;
+//    private final byte NULL_HEXCODE      = 0x4;
     private final int  NULL_HASHID       = 0xffffffff;
+    private final int  APP_PORT          = 5947;
     // Estructuras de control
-    private ConcurrentHashMap<String,String> SongDB;
-    private static ArrayList<String> NodeDB; 
-    private ConcurrentHashMap<Integer,P2pRequest> ConsultDB;
+    private static HashMap<String,Song> SongDB;
+    private static ArrayList<InetAddress> NodeDB; 
+    private static ConcurrentHashMap<Integer,String> ConsultDB;
+    private String host;
     
     public P2pProtocolHandler() {
         SongDB = null;
         NodeDB = null;
         ConsultDB = null;
+        host = null;
     }
     
-    public P2pProtocolHandler(String knownNodesFilePath, String musicLib){
-        ConsultDB = new ConcurrentHashMap<Integer,P2pRequest>();
+    public P2pProtocolHandler(String knownNodesFilePath, String musicLib,
+            String h){
+        ConsultDB = new ConcurrentHashMap<Integer,String>();
         NodeDB = parseKnownNodesFile(knownNodesFilePath);
         SongDB = parseSongFile(musicLib);
+        host = h;
     }
     
-    private ConcurrentHashMap<String,String> parseSongFile(String musicLib){
+    private HashMap<String,Song> parseSongFile(String musicLib){
         return ParseXSPF.parse(musicLib);
     }
     
-    private ArrayList<String> parseKnownNodesFile(String knownNodesFilePath){
-        ArrayList<String> Nodes = new ArrayList<String>(); 
+    private ArrayList<InetAddress> parseKnownNodesFile(String knownNodesFilePath){
+        ArrayList<InetAddress> Nodes = new ArrayList<InetAddress>(); 
         try {
         BufferedReader nodeFile = new BufferedReader(new
                 FileReader(knownNodesFilePath));
         String line;
-        while ((line = nodeFile.readLine()) != null)
-            Nodes.add(line);
+        while ((line = nodeFile.readLine()) != null) 
+            Nodes.add(InetAddress.getByName(line));
         }
         catch(FileNotFoundException fnf) {
             System.out.println("Error al abrir archivo "
@@ -62,7 +70,81 @@ public class P2pProtocolHandler{
     }
     
     public void makeConsult(P2pRequest req, Socket cs){
-        
+        // Crear comunicación con el cliente
+        try {
+            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            // Consulta repetida ?
+            if (ConsultDB.containsKey(req.hash_id)) {
+                // No atiendo la consulta porque ya lo hice en el pasado
+                String emptyString = "";
+                P2pRequest nulAnswer = new P2pRequest(NULL_HASHID,0,
+                        emptyString.getBytes());
+                os.writeObject(nulAnswer);
+                os.close();
+                return;
+            }
+            else {
+                String resultadoFinal = "";
+                // Agregar hash de consulta a mi base de datos
+                ConsultDB.put(req.hash_id, null);
+                // Verificar tipo de consulta: Autor, Titulo o todas
+                String tipoReq = new String(req.data);
+                if (tipoReq.startsWith("W")) {
+                    // Todas las canciones de la red
+                    resultadoFinal = SongDbToString(this.host);
+                }
+                else if (tipoReq.startsWith("T")) {
+                    // Por título
+                }
+                else if (tipoReq.startsWith("A")) {
+                    // Por autor
+                }
+                // Preparar estructura de respuestas
+                String[] respuesta = new String[NodeDB.size()];
+                // Hacer consulta a mis nodos vecinos.
+                // Arreglo de threads
+                ConsultThread[] ct = new ConsultThread[NodeDB.size()];
+                // Crear cada uno de los threads y ejecutarlos.
+                for(int i = 0; i < NodeDB.size(); i++) {
+                    ct[i] = new ConsultThread(i, respuesta, NodeDB.get(i),
+                            req, APP_PORT, this);
+                    ct[i].start();
+                }
+                // Espero que todos los threads terminen su ejecución
+                for(int i = 0; i < NodeDB.  size(); i++) {
+                    ct[i].join();
+                }
+                // Colocar todos los resultados en un solo String
+                for(int i = 0; i < NodeDB.size(); i++) {
+                    resultadoFinal.concat(respuesta[i]);
+                }
+                // Construir respuesta
+                P2pRequest respFinal = new P2pRequest(NULL_HASHID,0, 
+                        resultadoFinal.getBytes());
+                // Mandar respuesta
+                os.writeObject(respFinal);
+                os.close();
+                return;
+            }
+        }
+        catch(IOException e) {
+            System.out.println("Error I/O: "+e);
+        }
+        catch(InterruptedException ie) {
+            System.out.println("Interrupted exception: "+ie);
+        }
+    }
+    
+    public String SongDbToString(String nodeID) {
+        String resp = "";
+        // Obtener todas las canciones de SongDB
+        Collection<Song> s = SongDB.values();
+        Iterator<Song> it = s.iterator();
+        while (it.hasNext()) {
+            Song se = it.next();
+            resp.concat(se.toString()+"@@"+nodeID+"##");
+        }
+        return resp;
     }
     
     public void makeReachable(P2pRequest req, Socket cs){}
@@ -71,7 +153,7 @@ public class P2pProtocolHandler{
         // Nombre de archivo ?
         String nombreMP3 = new String(req.data);
         // Buscar en SongDB
-        String rutaArchivo = SongDB.get(nombreMP3);
+        String rutaArchivo = SongDB.get(nombreMP3).location;
 	//System.out.println("'"+nombreMP3+"'"); //flag
 	//System.out.println(rutaArchivo); //flag
         // Cargar archivo
@@ -111,7 +193,8 @@ public class P2pProtocolHandler{
             ObjectInputStream is = new ObjectInputStream(cs.getInputStream());
             P2pRequest ans = (P2pRequest) is.readObject();
             // Extraer datos del archivo MP3
-            FileOutputStream fos = new FileOutputStream(download_path+"/"+new String(req.data)+".mp3");
+            FileOutputStream fos = new FileOutputStream
+                    (download_path+"/"+new String(req.data)+".mp3");
             fos.write(ans.data);
             fos.close();
             os.close();
@@ -133,7 +216,7 @@ public class P2pProtocolHandler{
             ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
             // Mandar petición al servidor
             os.writeObject(req);
-            // Ahora esperar respuesta con archivo
+            // Ahora esperar respuesta con string
             ObjectInputStream is = new ObjectInputStream(cs.getInputStream());
             P2pRequest ans = (P2pRequest) is.readObject();
             result = new String(ans.data);

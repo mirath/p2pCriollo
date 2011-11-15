@@ -4,7 +4,7 @@ LINK_OPS =
 NANOXMLPATH = redes/nanoxml/java/nanoxml-lite-2.2.3.jar
 
 PARSER_OBJS = ParseXSPF.class Song.class $(NANOXMLPATH)
-NODE_OBJS = P2pRequest.class P2pProtocolHandler.class ClientRequestThread.class Node.class $(PARSER_OBJS)
+NODE_OBJS = P2pRequest.class P2pProtocolHandler.class ConsultThread.class ClientRequestThread.class Node.class $(PARSER_OBJS)
 CLIENT_OBJS = Client.class P2pProtocolHandler.class P2pRequest.class ServerRequest.class $(PARSER_OBJS)
 
 all:
@@ -45,5 +45,9 @@ P2pS.class: P2pS.java
 
 Song.class: Song.java
 	$(JAVAC) $(OPS) -c Song.java
+
+ConsultThread.class: ConsultThread.java
+	$(JAVAC) $(OPS) -c ConsultThread.java
+
 clean:
 	rm -rf *.class *.o Node Client parseXSPF

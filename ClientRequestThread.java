@@ -5,7 +5,7 @@ public class ClientRequestThread extends Thread{
     private final byte DOWNLOAD_HEXCODE  = 0x0;
     private final byte CONSULT_HEXCODE   = 0x2;
     private final byte REACHABLE_HEXCODE = 0x3;
-    private final byte NULL_HEXCODE      = 0x4;
+//    private final byte NULL_HEXCODE      = 0x4;
     private final int  NULL_HASHID       = 0xffffffff;
     private Socket client_socket;
     private P2pProtocolHandler p2pHandler;
