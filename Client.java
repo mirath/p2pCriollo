@@ -37,30 +37,34 @@ public class Client{
 		String[] resto = command.split("\\s");
                 String ans = null;
 	        // Preparar cadena
-	        String expr = parseSearchEntry(resto);
-	   	// Búsqueda por autor ?
-		if (resto[0].compareTo("-a") == 0) {
-			ServerRequest srv = new ServerRequest(client_socket, 
+                // Búsqueda por autor ?
+                if (resto.length > 1) {
+                    if (resto[1].compareTo("-a") == 0) {
+                        String expr = parseSearchEntry(resto, 2);
+                        ServerRequest srv = new ServerRequest(client_socket,
                                 node_port, node, "consult", "A@@"+expr,
                                 download_path);
                         ans = srv.run();
-		}
-		// Búsqueda por título
-                else if (resto[0].compareTo("-t") == 0) {
-			ServerRequest srv = new ServerRequest(client_socket, 
-                                node_port,node, "consult", "T@@"+expr, 
-                                download_path); 
-                        ans = srv.run();
-		}
-                else {   // Búsqueda de todos los archivos
-                    ServerRequest srv = new ServerRequest(client_socket, 
-                                node_port,node, "consult", "W@@", 
+                    }
+                    // Búsqueda por título
+                    else {
+                        String expr = parseSearchEntry(resto, 2);
+                        ServerRequest srv = new ServerRequest(client_socket,
+                                node_port,node, "consult", "T@@"+expr,
                                 download_path);
+                        ans = srv.run();
+                    }
+                }
+                
+                else {   // Búsqueda de todos los archivos
+                    ServerRequest srv = new ServerRequest(client_socket,
+                            node_port,node, "consult", "W@@",
+                            download_path);
                     ans = srv.run();
                 }
                 // Parsear respuesta
-		break;
-	    case 'A':
+                break;
+            case 'A':
 	    case 'a':
                 ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port,node, "reachable", "","");
@@ -105,9 +109,9 @@ public class Client{
 	}
     }
     
-    private static String parseSearchEntry(String[] resto) {
+    private static String parseSearchEntry(String[] resto, int startPoint) {
         String expr = new String();
-        for(int i = 1; i < resto.length; i++){
+        for(int i = startPoint; i < resto.length; i++){
             expr += resto[i].toLowerCase();
             expr += " ";
         }
