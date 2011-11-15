@@ -1,12 +1,15 @@
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
 public class Client{
 
     private static Socket client_socket = null;
     private static int node_port = -1;
     private static String node = null;
-    private static String download_filepath = null;
+    private static String download_path = null;
+    private static List<Song> current_song_list;
+    private static P2pProtocolHandler p2pHandler = new P2pProtocolHandler();
 
     public static void main(String args[]){
 	BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
@@ -34,35 +37,37 @@ public class Client{
 	    }
 	    
 	    switch(command.charAt(0)){
-            // 
+		// 
 	    case 'C':
 	    case 'c':
-                String[] resto = command.split("\\s");
-                // Preparar petición al Nodo
-                client_socket = bind_to_server(node);
-                // Preparar cadena
-                String expr = parseSearchEntry(resto);
-                // Búsqueda por autor ?
-                if (resto[0].compareTo("-a") == 0) {
-                    ServerRequest srv = new ServerRequest(client_socket,
-                            "consult", "A"+expr);
-                }
-                // Búsqueda por título
-                else {
-                    ServerRequest srv = new ServerRequest(client_socket,
-                            "consult", "T"+expr);
-                }
-		break;
+		String[] resto = command.split("\\s");
+	        // Preparar petición al Nodo
+	        client_socket = bind_to_server(node);
+	        // Preparar cadena
+	        String expr = parseSearchEntry(resto);
+	   	// Búsqueda por autor ?
+		if (resto[0].compareTo("-a") == 0) {
+			ServerRequest srv = new ServerRequest(client_socket,
+							      "consult", "A"+expr);
+		}
+		// Búsqueda por título
+		else {
+			ServerRequest srv = new ServerRequest(client_socket,
+							      "consult", "T"+expr);
+		}
+	    break;
 	    case 'D':
 	    case 'd':
-		break;
+		ServerRequest svr = new ServerRequest(client_socket,"download","One-Metallica",download_path);
+	        svr.run();
+	    break;
 	    case 'A':
 	    case 'a':
 		break;
 	    case 'Q':
 	    case 'q':
 		running = false;
-		break;
+	    break;
 	    default:
 		System.out.println("Comando invalido");
 		break;
@@ -101,7 +106,7 @@ public class Client{
 		node = args[i+1];
 		break;
 	    case 'd':
-		download_filepath = args[i+1];
+		download_path = args[i+1];
 		break;
 	    default:
 		System.out.println("Opcion incorrecta");

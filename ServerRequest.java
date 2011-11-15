@@ -10,6 +10,7 @@ public class ServerRequest {
     private final int  NULL_HASHID       = 0xffffffff;
     private Socket client_socket;
     private String operation;
+    private String download_path;
     P2pRequest req;
     byte[] data;
     
@@ -20,13 +21,20 @@ public class ServerRequest {
         this.data = data.getBytes();
     }
 
+    public ServerRequest(Socket cs, String operation, String data, String download_path){
+	client_socket = cs;
+        this.operation = operation;
+        req = null;
+        this.data = data.getBytes();
+	this.download_path = download_path;
+    }
+
     public void run(){
         P2pProtocolHandler h = new P2pProtocolHandler();
         if (operation.compareTo("download") == 0){
             // Contruir request
-            req = new P2pRequest(DOWNLOAD_HEXCODE, NULL_HASHID, 
-                    data);
-            h.requestSong(req, client_socket);
+            req = new P2pRequest(DOWNLOAD_HEXCODE,NULL_HASHID,data);
+            h.requestSong(req, download_path, client_socket);
         }
         else if (operation.compareTo("consult") == 0) {
             // Construir request

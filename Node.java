@@ -58,15 +58,19 @@ public class Node {
                 case 'p':
                     node_port = Integer.parseInt(args[i+1]);
                     break;
+
                 case 'c':
                     known_nodes_filepath = args[i+1];
                     break;
+
                 case 'b':
                     music_library_filepath = args[i+1];
                     break;
+
                 case 'i':
                     node_id = args[i+1];
                     break;
+
                 default:
                     System.out.println("Opcion incorrecta");
                     System.exit(1);

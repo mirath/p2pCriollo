@@ -27,7 +27,7 @@ public class P2pProtocolHandler{
     }
     
     private ConcurrentHashMap<String,String> parseSongFile(String musicLib){
-        // Parser de Germán.
+        SongDB = ParseXSPF.parse(musicLib);
         ConcurrentHashMap<String,String> dummy = new ConcurrentHashMap
                 <String,String>();
         return dummy;
@@ -98,7 +98,11 @@ public class P2pProtocolHandler{
         }
     }
     
-    public void requestSong(P2pRequest req, Socket cs){
+    public void requestSong(P2pRequest req, String download_path, Socket cs){
+	if(download_path == null){
+	    System.out.println("Path de descarga nulo");
+	    System.exit(1);
+	}
         try {
             // Construir salida hacia el servidor
             ObjectOutputStream os = new 
@@ -109,8 +113,7 @@ public class P2pProtocolHandler{
             ObjectInputStream is = new ObjectInputStream(cs.getInputStream());
             P2pRequest ans = (P2pRequest) is.readObject();
             // Extraer datos del archivo MP3
-            FileOutputStream fos = new FileOutputStream(
-                    "/home/heraclio/destino/nuevoSaxobeat.mp3");
+            FileOutputStream fos = new FileOutputStream(download_path);
             fos.write(ans.data);
             fos.close();
             os.close();

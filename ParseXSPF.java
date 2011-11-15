@@ -1,10 +1,11 @@
 import nanoxml.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.io.*;
 
 public class ParseXSPF{
     public static void main(String args[]){
-	Song songs[] = parse(args[0]);
+	//Song songs[] = parse(args[0]);
 	// for(int i = 0; i<songs.length; ++i){
 	//     System.out.println(songs[i].location + "||" +
 	// 		       songs[i].title + "||" +
@@ -12,8 +13,10 @@ public class ParseXSPF{
 	// }
     }
 
-    public static Song[] parse(String filename){
-	LinkedList<Song> sl = new LinkedList<Song>();
+    //public static Song[] parse(String filename){
+    public static ConcurrentHashMap<String,String> parse(String filename){
+	//LinkedList<Song> sl = new LinkedList<Song>();
+	ConcurrentHashMap<String,String> sl = new ConcurrentHashMap<String,String>();
 
 	try{
 	    XMLElement xspf = new XMLElement();
@@ -44,7 +47,8 @@ public class ParseXSPF{
 			XMLElement attr = (XMLElement)attrs.nextElement();
 			get_xspf_attr(attr,s);
 		    }
-		    sl.add(s);
+		    //sl.add(s);
+		    sl.put(s.title +"-"+ s.creator,s.title +"-"+ s.creator +"-"+ s.location);
 		    //System.out.println(s.location +"||"+ s.title +"||"+ s.creator);
 		}
 	    }
@@ -55,8 +59,8 @@ public class ParseXSPF{
 	}
 	catch(Exception e){}
 	
-	Song sa[] = new Song[sl.size()];
-	return sl.toArray(sa);
+	//Song sa[] = new Song[sl.size()];
+	return sl;//.toArray(sa);
     }
 
     public static void get_xspf_attr(XMLElement attr, Song s){
