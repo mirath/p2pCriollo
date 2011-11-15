@@ -54,7 +54,7 @@ public class ServerRequest {
         else if (operation.compareTo("reachable") == 0) {
             // Construir request
             req = new P2pRequest(REACHABLE_HEXCODE,NULL_HASHID,null);
-            h.requestReachable(req, client_socket);
+            ans = h.requestReachable(req, client_socket);
         }
         close_socket(client_socket);
         return ans;

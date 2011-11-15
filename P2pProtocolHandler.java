@@ -176,7 +176,22 @@ public class P2pProtocolHandler{
         return resp;
     }
     
-    public void makeReachable(P2pRequest req, Socket cs){}
+    public void makeReachable(P2pRequest req, Socket cs) {
+        // Mandar respuesta al cliente
+        String resp = "";
+        try {
+            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            for(int i = 0; i < NodeDB.size(); i++) {
+                resp.concat(NodeDB.get(i).getHostName()+"##");
+            }
+            P2pRequest ans = new P2pRequest(NULL_HASHID,0,resp.getBytes());
+            os.writeObject(ans);
+            os.close();
+        }
+        catch(IOException e) {
+            System.out.println("Error I/O: "+e);
+        }
+    }
     
     public void sendSong(P2pRequest req, Socket cs) {
         // Nombre de archivo ?
@@ -259,7 +274,24 @@ public class P2pProtocolHandler{
         return result;
     }
     
-    public void requestReachable(P2pRequest req, Socket cs) {
-        return;
+    public String requestReachable(P2pRequest req, Socket cs) {
+        String result = null;
+        // Construir salida hacia el servidor
+        try {
+            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            // Mandar petición al servidor
+            os.writeObject(req);
+            // Ahora esperar respuesta con string
+            ObjectInputStream is = new ObjectInputStream(cs.getInputStream());
+            P2pRequest ans = (P2pRequest) is.readObject();
+            result = new String(ans.data);
+        }
+        catch(ClassNotFoundException cnfe) {
+            System.out.println("Class not found: "+cnfe);
+        }
+        catch(IOException e) {
+            System.out.println("Error I/O: "+e);
+        }
+        return result;
     }
 }

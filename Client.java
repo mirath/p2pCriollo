@@ -43,23 +43,29 @@ public class Client{
 			ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port, node, "consult", "A@@"+expr,
                                 download_path);
+                        ans = srv.run();
 		}
 		// Búsqueda por título
                 else if (resto[0].compareTo("-t") == 0) {
 			ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port,node, "consult", "T@@"+expr, 
                                 download_path); 
+                        ans = srv.run();
 		}
                 else {   // Búsqueda de todos los archivos
                     ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port,node, "consult", "W@@", 
                                 download_path);
                     ans = srv.run();
-                    // Parsear respuesta
                 }
+                // Parsear respuesta
 		break;
 	    case 'A':
 	    case 'a':
+                ServerRequest srv = new ServerRequest(client_socket, 
+                                node_port,node, "reachable", "","");
+                ans = srv.run();
+                System.out.println(ans);
 		break;
 	    case 'D':
 	    case 'd':
