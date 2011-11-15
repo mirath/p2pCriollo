@@ -67,13 +67,13 @@ public class ParseXSPF{
 	String attr_name = attr.getName();
 	
 	if (attr_name.compareTo("location") == 0){
-	    s.location = attr.getContent();
+	    s.location = attr.getContent().toLowerCase();
 	}
 	else if (attr_name.compareTo("title") == 0){
-	    s.title = attr.getContent();
+	    s.title = attr.getContent().toLowerCase();
 	}
 	else if (attr_name.compareTo("creator") == 0){
-	    s.creator = attr.getContent();
+	    s.creator = attr.getContent().toLowerCase();
 	}
     }
 }

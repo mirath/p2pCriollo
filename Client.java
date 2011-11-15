@@ -41,18 +41,18 @@ public class Client{
 	   	// Búsqueda por autor ?
 		if (resto[0].compareTo("-a") == 0) {
 			ServerRequest srv = new ServerRequest(client_socket, 
-                                node_port, node, "consult", "A"+expr,
+                                node_port, node, "consult", "A@@"+expr,
                                 download_path);
 		}
 		// Búsqueda por título
                 else if (resto[0].compareTo("-t") == 0) {
 			ServerRequest srv = new ServerRequest(client_socket, 
-                                node_port,node, "consult", "T"+expr, 
+                                node_port,node, "consult", "T@@"+expr, 
                                 download_path); 
 		}
                 else {   // Búsqueda de todos los archivos
                     ServerRequest srv = new ServerRequest(client_socket, 
-                                node_port,node, "consult", "W", 
+                                node_port,node, "consult", "W@@", 
                                 download_path);
                     ans = srv.run();
                     // Parsear respuesta

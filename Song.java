@@ -4,9 +4,9 @@ public class Song{
     public String creator;
     
     public Song(String l, String t, String c){
-	location = l;
-	title = t;
-	creator = c;
+	location = l.toLowerCase();
+	title = t.toLowerCase();
+	creator = c.toLowerCase();
     }
 
     public Song(){}

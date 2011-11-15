@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class P2pProtocolHandler{
 //    private final byte DOWNLOAD_HEXCODE  = 0x0;
@@ -89,15 +91,42 @@ public class P2pProtocolHandler{
                 ConsultDB.put(req.hash_id, null);
                 // Verificar tipo de consulta: Autor, Titulo o todas
                 String tipoReq = new String(req.data);
-                if (tipoReq.startsWith("W")) {
+                String[] st = tipoReq.split("@@");
+                String expr = st[1].toLowerCase();
+                String tipo = st[0];
+                if (tipoReq.compareTo("W") == 0) {
                     // Todas las canciones de la red
                     resultadoFinal = SongDbToString(this.host);
                 }
-                else if (tipoReq.startsWith("T")) {
+                else if (tipoReq.compareTo("T") == 0) {
                     // Por título
+                    Pattern regex = Pattern.compile(expr);
+                    Matcher m;
+                    Collection<Song> s = SongDB.values();
+                    Iterator<Song> it = s.iterator();
+                    while (it.hasNext()) {
+                        Song sg = it.next();
+                        m = regex.matcher(sg.title);
+                        if (m.find()) { // Hubo match
+                            resultadoFinal.concat(sg.toString()+"@@"
+                                    +this.host+"##");
+                        }
+                    }
                 }
-                else if (tipoReq.startsWith("A")) {
+                else if (tipoReq.compareTo("A") == 0) {
                     // Por autor
+                    Pattern regex = Pattern.compile(expr);
+                    Matcher m;
+                    Collection<Song> s = SongDB.values();
+                    Iterator<Song> it = s.iterator();
+                    while (it.hasNext()) {
+                        Song sg = it.next();
+                        m = regex.matcher(sg.creator);
+                        if (m.find()) { // Hubo match
+                            resultadoFinal.concat(sg.toString()+"@@"
+                                    +this.host+"##");
+                        }
+                    }
                 }
                 // Preparar estructura de respuestas
                 String[] respuesta = new String[NodeDB.size()];
