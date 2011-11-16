@@ -8,7 +8,7 @@ public class Client{
     private static int node_port = -1;
     private static String node = null;
     private static String download_path = null;
-    private static Vector<Song> current_songs = new Vector<Song>();
+    private static ArrayList<Song> current_songs = new ArrayList<Song>();
     private static P2pProtocolHandler p2pHandler = new P2pProtocolHandler();
 
 
@@ -135,7 +135,7 @@ public class Client{
 	}
     }
 
-    private static int longest_title(Vector<Song> songs){
+    private static int longest_title(ArrayList<Song> songs){
 	int max = 0;
 	for (int i = 0; i < songs.size(); ++i){
 	    int aux = songs.get(i).title.length();
@@ -145,7 +145,7 @@ public class Client{
 	return max;
     }
 
-    private static int longest_creator(Vector<Song> songs){
+    private static int longest_creator(ArrayList<Song> songs){
 	int max = 0;
 	for (int i = 0; i < songs.size(); ++i){
 	    int aux = songs.get(i).creator.length();
@@ -202,8 +202,8 @@ public class Client{
 	return;
     }
 
-    private static Vector<Song> parse_songs(String ss){
-	Vector<Song> songs = new Vector<Song>();
+    private static ArrayList<Song> parse_songs(String ss){
+	ArrayList<Song> songs = new ArrayList<Song>();
 	
 	String ss_strs[] = ss.split("##");
 
