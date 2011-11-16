@@ -41,8 +41,8 @@ public class Client{
 		/**/
 		resto = command.split("\\s");
 	        // Preparar cadena
-                // Búsqueda por autor ?
                 if (resto.length > 1) {
+		    // Búsqueda por autor ?
                     if (resto[1].compareTo("-a") == 0) {
                         String expr = parseSearchEntry(resto, 2);
                         ServerRequest srv = new ServerRequest(client_socket,
@@ -57,6 +57,7 @@ public class Client{
                                 node_port,node, "consult", "T@@"+expr,
                                 download_path);
                         ans = srv.run();
+		    }
 		}
 		// Búsqueda de todos los archivos
                 else {
@@ -72,18 +73,6 @@ public class Client{
 	        current_songs = parse_songs(ans);
 
 		break;
-	    case 'A':
-                    }
-                }
-                
-                else {   // Búsqueda de todos los archivos
-                    ServerRequest srv = new ServerRequest(client_socket,
-                            node_port,node, "consult", "W@@",
-                            download_path);
-                    ans = srv.run();
-                }
-                // Parsear respuesta
-                break;
             case 'A':
 	    case 'a':
                 ServerRequest srv = new ServerRequest(client_socket, 
@@ -101,11 +90,20 @@ public class Client{
 		    // 			    "download","moulin rouge-mireille mathieu",
 		    // 			    download_path);
 		    int index = Integer.parseInt(resto[1]);
+
+		    if(index >= current_songs.size()){
+			System.out.println("La cancion con el id "+index+" no existe");
+			break;
+		    }
+
 		    Song s = current_songs.get(index);
 		    svr = new ServerRequest(client_socket,node_port,node,
 		    			    "download",s.title+"-"+s.creator,
 		    			    download_path);
 		    svr.run();
+		}
+		else{
+		    System.out.println("Comando Download malformado");
 		}
 		break;
 	    case 'P':
