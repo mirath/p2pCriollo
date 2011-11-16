@@ -135,7 +135,7 @@ public class Client{
 		}
 
 		try{
-		    Runtime.getRuntime().exec(new String[]{"vlc",
+		    Runtime.getRuntime().exec(new String[]{"cvlc",
 							   s.title+"-"+s.creator+".mp3"});
 		}
 		catch(IOException e){
@@ -237,6 +237,11 @@ public class Client{
 
     private static ArrayList<Song> parse_songs(String ss){
 	ArrayList<Song> songs = new ArrayList<Song>();
+
+	if(ss.length() <= 0){
+	    System.out.println("No se encontraron canciones");
+	    return songs;
+	}
 	
 	String ss_strs[] = ss.split("##");
 
