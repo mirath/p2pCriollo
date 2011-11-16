@@ -49,7 +49,7 @@ public class Client{
                                 node_port, node, "consult", "A@@"+expr,
                                 download_path);
                         ans = srv.run();
-                        System.out.println(ans);
+//                        System.out.println(ans);
                     }
                     // Búsqueda por título
                     else {
@@ -58,7 +58,7 @@ public class Client{
                                 node_port,node, "consult", "T@@"+expr,
                                 download_path);
                         ans = srv.run();
-                        System.out.println(ans);
+//                        System.out.println(ans);
 		    }
 		}
 		// Búsqueda de todos los archivos
@@ -67,7 +67,7 @@ public class Client{
                                 node_port,node, "consult", "W@@", 
                                 download_path);
                     ans = srv.run();
-                    System.out.println(ans);
+//                    System.out.println(ans);
                 }
 		//*/
 
