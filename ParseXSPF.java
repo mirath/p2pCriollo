@@ -4,17 +4,8 @@ import java.io.*;
 
 public class ParseXSPF{
     public static void main(String args[]){
-	//Song songs[] = parse(args[0]);
-	// for(int i = 0; i<songs.length; ++i){
-	//     System.out.println(songs[i].location + "||" +
-	// 		       songs[i].title + "||" +
-	// 		       songs[i].creator);
-	// }
     }
-
-    //public static Song[] parse(String filename){
     public static HashMap<String,Song> parse(String filename){
-	//LinkedList<Song> sl = new LinkedList<Song>();
 	HashMap<String,Song> sl = new HashMap<String,Song>();
 
 	try{
@@ -46,10 +37,7 @@ public class ParseXSPF{
 			XMLElement attr = (XMLElement)attrs.nextElement();
 			get_xspf_attr(attr,s);
 		    }
-		    //sl.add(s);
 		    sl.put(s.title+"-"+s.creator,s);
-		    //System.out.println("parser:"+s.title +"-"+ s.creator);//flag
-		    //System.out.println(sl.get(s.title +"-"+ s.creator));//flag
 		}
 	    }
 	    else{
@@ -59,8 +47,7 @@ public class ParseXSPF{
 	}
 	catch(Exception e){}
 	
-	//Song sa[] = new Song[sl.size()];
-	return sl;//.toArray(sa);
+	return sl;
     }
 
     public static void get_xspf_attr(XMLElement attr, Song s){

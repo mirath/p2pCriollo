@@ -14,21 +14,10 @@ public class Node {
         //Parseo de par�metros
         set_params(args);
         
-        // System.out.println(node_port);
-        // System.out.println(node_id);
-        // System.out.println(music_library_filepath);
-        // System.out.println(known_nodes_filepath);
-        
         try{
 	    System.out.println("Servidor "+node_id+" estableciendo puerto de escucha");//flag
             ServerSocket node_socket = new ServerSocket(node_port);
             Socket client_socket = null;
-            
-            // CloseSockets cs = new CloseSockets(node_socket);
-            // Runtime.getRuntime().addShutdownHook(cs);
-            
-            // Parsear el archivo de nodos conocidos
-            
             
             // Crear P2pProtocolHandler genérico 
             P2pProtocolHandler genericHandler = 

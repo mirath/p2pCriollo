@@ -37,7 +37,8 @@ public class P2pProtocolHandler{
     }
     
     private HashMap<String,Song> parseSongFile(String musicLib){
-        return ParseXSPF.parse(musicLib);
+        HashMap<String,Song> resp = ParseXSPF.parse(musicLib);
+        return resp;
     }
     
     private ArrayList<InetAddress> parseKnownNodesFile(String knownNodesFilePath){
@@ -76,7 +77,7 @@ public class P2pProtocolHandler{
         try {
             ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
             // Consulta repetida ?
-            if (ConsultDB.containsKey(req.hash_id)) {
+            if (!ConsultDB.isEmpty() && ConsultDB.containsKey(req.hash_id)) {
                 // No atiendo la consulta porque ya lo hice en el pasado
                 String emptyString = "";
                 P2pRequest nulAnswer = new P2pRequest(NULL_HASHID,0,
@@ -88,17 +89,20 @@ public class P2pProtocolHandler{
             else {
                 String resultadoFinal = "";
                 // Agregar hash de consulta a mi base de datos
-                ConsultDB.put(req.hash_id, null);
+                ConsultDB.put(req.hash_id, "");
                 // Verificar tipo de consulta: Autor, Titulo o todas
                 String tipoReq = new String(req.data);
                 String[] st = tipoReq.split("@@");
-                String expr = st[1].toLowerCase();
                 String tipo = st[0];
-                if (tipoReq.compareTo("W") == 0) {
+                String expr = null;
+                if (st.length > 1) 
+                    expr = st[1].toLowerCase();
+                
+                if (st[0].compareTo("W") == 0) {
                     // Todas las canciones de la red
                     resultadoFinal = SongDbToString(this.host);
                 }
-                else if (tipoReq.compareTo("T") == 0) {
+                else if (st[0].compareTo("T") == 0) {
                     // Por título
                     Pattern regex = Pattern.compile(expr);
                     Matcher m;
@@ -108,12 +112,13 @@ public class P2pProtocolHandler{
                         Song sg = it.next();
                         m = regex.matcher(sg.title);
                         if (m.find()) { // Hubo match
-                            resultadoFinal.concat(sg.toString()+"@@"
-                                    +this.host+"##");
+                            resultadoFinal = resultadoFinal.concat
+                                    (sg.toString()+"@@"+this.host+"##");
                         }
+                        m.reset();
                     }
                 }
-                else if (tipoReq.compareTo("A") == 0) {
+                else if (st[0].compareTo("A") == 0) {
                     // Por autor
                     Pattern regex = Pattern.compile(expr);
                     Matcher m;
@@ -122,10 +127,12 @@ public class P2pProtocolHandler{
                     while (it.hasNext()) {
                         Song sg = it.next();
                         m = regex.matcher(sg.creator);
+                        System.out.println("Creator = "+sg.creator);
                         if (m.find()) { // Hubo match
-                            resultadoFinal.concat(sg.toString()+"@@"
-                                    +this.host+"##");
+                            resultadoFinal = resultadoFinal.concat
+                                    (sg.toString()+"@@"+this.host+"##");
                         }
+                        m.reset();
                     }
                 }
                 // Preparar estructura de respuestas
@@ -145,9 +152,10 @@ public class P2pProtocolHandler{
                 }
                 // Colocar todos los resultados en un solo String
                 for(int i = 0; i < NodeDB.size(); i++) {
-                    resultadoFinal.concat(respuesta[i]);
+                    resultadoFinal = resultadoFinal.concat(respuesta[i]);
                 }
                 // Construir respuesta
+                System.out.println("Construir resp");
                 P2pRequest respFinal = new P2pRequest(NULL_HASHID,0, 
                         resultadoFinal.getBytes());
                 // Mandar respuesta
@@ -171,7 +179,7 @@ public class P2pProtocolHandler{
         Iterator<Song> it = s.iterator();
         while (it.hasNext()) {
             Song se = it.next();
-            resp.concat(se.toString()+"@@"+nodeID+"##");
+            resp = resp.concat(se.toString()+"@@"+nodeID+"##");
         }
         return resp;
     }
@@ -182,7 +190,7 @@ public class P2pProtocolHandler{
         try {
             ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
             for(int i = 0; i < NodeDB.size(); i++) {
-                resp.concat(NodeDB.get(i).getHostName()+"##");
+                resp = resp.concat(NodeDB.get(i).getHostName()+"##");
             }
             P2pRequest ans = new P2pRequest(NULL_HASHID,0,resp.getBytes());
             os.writeObject(ans);
@@ -198,8 +206,6 @@ public class P2pProtocolHandler{
         String nombreMP3 = new String(req.data);
         // Buscar en SongDB
         String rutaArchivo = SongDB.get(nombreMP3).location;
-	//System.out.println("'"+nombreMP3+"'"); //flag
-	//System.out.println(rutaArchivo); //flag
         // Cargar archivo
         try {
 	    File cancion = new File(rutaArchivo);

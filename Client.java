@@ -45,6 +45,7 @@ public class Client{
                                 node_port, node, "consult", "A@@"+expr,
                                 download_path);
                         ans = srv.run();
+                        System.out.println(ans);
                     }
                     // Búsqueda por título
                     else {
@@ -53,6 +54,7 @@ public class Client{
                                 node_port,node, "consult", "T@@"+expr,
                                 download_path);
                         ans = srv.run();
+                        System.out.println(ans);
                     }
                 }
                 
@@ -61,6 +63,7 @@ public class Client{
                             node_port,node, "consult", "W@@",
                             download_path);
                     ans = srv.run();
+                    System.out.println(ans);
                 }
                 // Parsear respuesta
                 break;
@@ -111,10 +114,12 @@ public class Client{
     
     private static String parseSearchEntry(String[] resto, int startPoint) {
         String expr = new String();
-        for(int i = startPoint; i < resto.length; i++){
+        int i = startPoint;
+        for(i = startPoint; i < resto.length - 1; i++){
             expr += resto[i].toLowerCase();
             expr += " ";
         }
+        expr += resto[i].toLowerCase();
         return expr;
     }
 
