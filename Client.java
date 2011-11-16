@@ -2,6 +2,10 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ *
+ * @author jorge
+ */
 public class Client{
 
     private static Socket client_socket = null;
@@ -10,8 +14,12 @@ public class Client{
     private static String download_path = null;
     private static ArrayList<Song> current_songs = new ArrayList<Song>();
     private static P2pProtocolHandler p2pHandler = new P2pProtocolHandler();
+    private static HashMap<String,Song> downloaded_songs = new HashMap<String,Song>();
 
-
+    /**
+     *
+     * @param args
+     */
     public static void main(String args[]){
 	BufferedReader console = new BufferedReader
                 (new InputStreamReader(System.in));
@@ -35,10 +43,13 @@ public class Client{
 	    catch(IOException e){
 		System.exit(1);
 	    }
+
+	    if(command.length() <= 0)
+		continue;
+
 	    switch(command.charAt(0)){
 	    case 'C':
 	    case 'c':
-		/**/
 		resto = command.split("\\s");
 	        // Preparar cadena
                 if (resto.length > 1) {
@@ -72,13 +83,11 @@ public class Client{
                     ans = srv.run();
                     //System.out.println(ans);//flag
                 }
-		//*/
-
-		//String ans_aux = "Metallica@@One@@sagitario.ac.labf.usb.ve##Brian Backett@@Gemini@@159.90.9.211";
 	    
 	        current_songs = parse_songs(ans);
 
 		break;
+
             case 'A':
 	    case 'a':
                 ServerRequest srv = new ServerRequest(client_socket, 
@@ -87,15 +96,11 @@ public class Client{
                 //System.out.println(ans);//flag
 		print_reachable(ans);
 		break;
+
 	    case 'D':
 	    case 'd':
 		resto = command.split("\\s");
 	        if(resto.length > 1){
-		    // svr = new ServerRequest(client_socket, node_port, 
-		    //                         node, "download", "one.mp3",download_path);
-		    // svr = new ServerRequest(client_socket,node_port,node,
-		    // 			    "download","moulin rouge-mireille mathieu",
-		    // 			    download_path);
 		    int index = Integer.parseInt(resto[1]);
 
 		    if(index >= current_songs.size()){
@@ -107,12 +112,20 @@ public class Client{
 		    svr = new ServerRequest(client_socket,node_port,s.location,
 		    			    "download",s.title+"-"+s.creator,
 		    			    download_path);
-		    svr.run();
+		    String res = svr.run();
+
+		    if(res != null){
+			Song ds = new Song();
+			ds.title   = s.title;
+			ds.creator = s.creator;
+			downloaded_songs.put(s.title+"-"+s.creator,ds);
+		    }
 		}
 		else{
 		    System.out.println("Comando Download malformado");
 		}
 		break;
+
 	    case 'P':
 	    case 'p':
 		resto = command.split("\\s");
@@ -125,10 +138,21 @@ public class Client{
 		    }
 
 		    s = current_songs.get(index);
-		    svr = new ServerRequest(client_socket,node_port,s.location,
-		    			    "download",s.title+"-"+s.creator,
-		    			    download_path);
-		    svr.run();
+
+		    if(downloaded_songs.get(s.title+"-"+s.creator) == null){
+			svr = new ServerRequest(client_socket,node_port,s.location,
+						"download",s.title+"-"+s.creator,
+						download_path);
+			String res = svr.run();
+
+			if(res != null){
+			    Song ds = new Song();
+			    ds.title   = s.title;
+			    ds.creator = s.creator;
+			    downloaded_songs.put(s.title+"-"+s.creator,ds);
+			}
+		    }
+		    else{ System.out.println("Song already here"); } //flag
 		}
 		else{
 		    System.out.println("Comando Play malformado");
@@ -136,7 +160,7 @@ public class Client{
 
 		try{
 		    Runtime.getRuntime().exec(new String[]{"cvlc",
-							   s.title+"-"+s.creator+".mp3"});
+							   download_path+"/"+s.title+"-"+s.creator+".mp3"});
 		}
 		catch(IOException e){
 		    System.out.println("I/O Error: "+e);
@@ -147,10 +171,12 @@ public class Client{
                 //         "moulin rouge-mireille mathieu",download_path);
 	        // svr.run();
 		break;
+
 	    case 'Q':
 	    case 'q':
 		running = false;
 	        break;
+
 	    default:
 		System.out.println("Comando invalido");
 		break;

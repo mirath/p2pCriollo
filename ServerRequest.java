@@ -3,6 +3,10 @@ import java.io.IOException;
 import java.net.*;
 import java.util.Random;
 
+/**
+ *
+ * @author jorge
+ */
 public class ServerRequest {
     private final byte DOWNLOAD_HEXCODE  = 0x0;
     private final byte CONSULT_HEXCODE   = 0x2;
@@ -15,6 +19,12 @@ public class ServerRequest {
     P2pRequest req;
     byte[] data;
     
+    /**
+     *
+     * @param cs
+     * @param operation
+     * @param data
+     */
     public ServerRequest(Socket cs, String operation, String data){
         client_socket = cs;
         this.operation = operation;
@@ -22,6 +32,15 @@ public class ServerRequest {
         this.data = data.getBytes();
     }
     
+    /**
+     *
+     * @param cs
+     * @param nodePort
+     * @param node
+     * @param operation
+     * @param data
+     * @param download_path
+     */
     public ServerRequest(Socket cs, int nodePort, String node, String operation,
 			 String data, String download_path){
         client_socket = bind_to_server(node, nodePort);
@@ -31,6 +50,10 @@ public class ServerRequest {
         this.download_path = download_path;
     }
     
+    /**
+     *
+     * @return
+     */
     public String run(){
         String ans = null;
         P2pProtocolHandler h = new P2pProtocolHandler();
@@ -39,15 +62,19 @@ public class ServerRequest {
             req = new P2pRequest(DOWNLOAD_HEXCODE,NULL_HASHID,data);
             String songname = new String(req.data);
             System.out.println("Descargando "+songname+"...");
-            h.requestSong(req, download_path, client_socket);
-            System.out.println("Cancion "+songname+" descargada");
+            boolean res = h.requestSong(req, download_path, client_socket);
+	    if(res){
+		System.out.println("Cancion "+songname+" descargada");
+		ans = new String();
+	    }
         }
         else if (operation.compareTo("consult") == 0) {
             // Construir request
             Random gen = new Random();
-            String hash = Integer.toString(gen.nextInt()) +
-                    client_socket.getInetAddress().getHostAddress() +
-                    System.currentTimeMillis();
+            String hash =
+		Integer.toString(gen.nextInt()) +
+		client_socket.getInetAddress().getHostAddress() +
+		System.currentTimeMillis();
             req = new P2pRequest(CONSULT_HEXCODE,hash.hashCode(),data);
             ans = h.requestConsult(req, client_socket);
         }

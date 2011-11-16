@@ -8,6 +8,10 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ * @author jorge
+ */
 public class P2pProtocolHandler{
 //    private final byte DOWNLOAD_HEXCODE  = 0x0;
 //    private final byte CONSULT_HEXCODE   = 0x2;
@@ -22,6 +26,9 @@ public class P2pProtocolHandler{
     private static String host;
     private String id;
     
+    /**
+     *
+     */
     public P2pProtocolHandler() {
         SongDB = null;
         NodeDB = null;
@@ -29,6 +36,12 @@ public class P2pProtocolHandler{
         host = null;
     }
     
+    /**
+     *
+     * @param knownNodesFilePath
+     * @param musicLib
+     * @param id
+     */
     public P2pProtocolHandler(String knownNodesFilePath, String musicLib,String id){
         ConsultDB = new ConcurrentHashMap<Integer,String>();
         NodeDB = parseKnownNodesFile(knownNodesFilePath);
@@ -65,6 +78,11 @@ public class P2pProtocolHandler{
         return Nodes;
     }
     
+    /**
+     *
+     * @param s
+     * @return
+     */
     public P2pRequest getRequest(Socket s) {
         P2pRequest req = null;
         try {
@@ -79,6 +97,12 @@ public class P2pProtocolHandler{
         return req;
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     */
+    @SuppressWarnings({"static-access", "static-access"})
     public void makeConsult(P2pRequest req, Socket cs){
         // Crear comunicación con el cliente
         try {
@@ -121,7 +145,7 @@ public class P2pProtocolHandler{
                         m = regex.matcher(sg.title);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
-                                    (sg.toString()+"@@"+this.host+"@@"+this.id+"##");
+                                    (sg.toString()+"@@"+P2pProtocolHandler.host+"@@"+this.id+"##");
                         }
                         m.reset();
                     }
@@ -137,7 +161,7 @@ public class P2pProtocolHandler{
                         m = regex.matcher(sg.creator);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
-                                    (sg.toString()+"@@"+this.host+"@@"+this.id+"##");
+                                    (sg.toString()+"@@"+P2pProtocolHandler.host+"@@"+this.id+"##");
                         }
                         m.reset();
                     }
@@ -178,6 +202,12 @@ public class P2pProtocolHandler{
         }
     }
     
+    /**
+     *
+     * @param nodeID
+     * @return
+     */
+    @SuppressWarnings("static-access")
     public String SongDbToString(String nodeID) {
         String resp = "";
         // Obtener todas las canciones de SongDB
@@ -185,11 +215,16 @@ public class P2pProtocolHandler{
         Iterator<Song> it = s.iterator();
         while (it.hasNext()) {
             Song se = it.next();
-            resp = resp.concat(se.toString()+"@@"+this.host+"@@"+nodeID+"##");
+            resp = resp.concat(se.toString()+"@@"+P2pProtocolHandler.host+"@@"+nodeID+"##");
         }
         return resp;
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     */
     public void makeReachable(P2pRequest req, Socket cs) {
         // Mandar respuesta al cliente
         String resp = "";
@@ -207,6 +242,11 @@ public class P2pProtocolHandler{
         }
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     */
     public void sendSong(P2pRequest req, Socket cs) {
         // Nombre de archivo ?
         String nombreMP3 = new String(req.data);
@@ -235,7 +275,16 @@ public class P2pProtocolHandler{
         }
     }
     
-    public void requestSong(P2pRequest req, String download_path, Socket cs){
+    /**
+     *
+     * @param req
+     * @param download_path
+     * @param cs
+     * @return
+     */
+    public boolean requestSong(P2pRequest req, String download_path, Socket cs){
+	boolean result = true;
+
 	if(download_path == null){
 	    System.out.println("Path de descarga nulo");
 	    System.exit(1);
@@ -258,13 +307,22 @@ public class P2pProtocolHandler{
         }
         catch(ClassNotFoundException cnfe) {
             System.out.println("Class not found: "+cnfe);
+	    result = false;
         }
         catch(IOException e) {
             System.out.println("Error I/O: "+e);
+	    result = false;
         }
-        return;
+
+        return result;
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     * @return
+     */
     public String requestConsult(P2pRequest req, Socket cs) {
         String result = null;
         // Contruir salida hacia el servidor
@@ -286,6 +344,12 @@ public class P2pProtocolHandler{
         return result;
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     * @return
+     */
     public String requestReachable(P2pRequest req, Socket cs) {
         String result = null;
         // Construir salida hacia el servidor

@@ -1,6 +1,10 @@
 import java.net.*;
 import java.io.*;
 
+/**
+ *
+ * @author jorge
+ */
 public class ClientRequestThread extends Thread{
     private final byte DOWNLOAD_HEXCODE  = 0x0;
     private final byte CONSULT_HEXCODE   = 0x2;
@@ -10,11 +14,19 @@ public class ClientRequestThread extends Thread{
     private Socket client_socket;
     private P2pProtocolHandler p2pHandler;
 
+    /**
+     *
+     * @param cs
+     * @param p2ph
+     */
     public ClientRequestThread(Socket cs, P2pProtocolHandler p2ph){
 	client_socket = cs;
         p2pHandler = p2ph;
     }
     
+    /**
+     * 
+     */
     @Override
     public void run(){
 	System.out.println("Servidor procesando request de un cliente");//flag

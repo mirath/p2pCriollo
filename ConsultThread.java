@@ -3,6 +3,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
+/**
+ *
+ * @author jorge
+ */
 public class ConsultThread extends Thread {
     int pos;
     String[] result;
@@ -11,7 +15,16 @@ public class ConsultThread extends Thread {
     int port;
     P2pProtocolHandler p2pHandler;
     
-   public ConsultThread(int i, String[] respuesta, InetAddress ip, 
+    /**
+     *
+     * @param i
+     * @param respuesta
+     * @param ip
+     * @param req
+     * @param port
+     * @param pHandler
+     */
+    public ConsultThread(int i, String[] respuesta, InetAddress ip,
            P2pRequest req, int port, P2pProtocolHandler pHandler) {
         pos = i;
         result = respuesta;
@@ -21,7 +34,10 @@ public class ConsultThread extends Thread {
         this.p2pHandler = pHandler;
     }
    
-    @Override
+   /**
+    *
+    */
+   @Override
    public void run() {
        // Crear conexión con el servidor vecino
         try { 
