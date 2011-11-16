@@ -127,7 +127,6 @@ public class P2pProtocolHandler{
                     while (it.hasNext()) {
                         Song sg = it.next();
                         m = regex.matcher(sg.creator);
-                        System.out.println("Creator = "+sg.creator);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
                                     (sg.toString()+"@@"+this.host+"##");
@@ -155,7 +154,6 @@ public class P2pProtocolHandler{
                     resultadoFinal = resultadoFinal.concat(respuesta[i]);
                 }
                 // Construir respuesta
-                System.out.println("Construir resp");
                 P2pRequest respFinal = new P2pRequest(NULL_HASHID,0, 
                         resultadoFinal.getBytes());
                 // Mandar respuesta
