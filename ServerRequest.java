@@ -23,7 +23,7 @@ public class ServerRequest {
     }
     
     public ServerRequest(Socket cs, int nodePort, String node, String operation,
-            String data, String download_path){
+			 String data, String download_path){
         client_socket = bind_to_server(node, nodePort);
         this.operation = operation;
         req = null;

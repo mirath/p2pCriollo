@@ -4,7 +4,9 @@ import java.io.*;
 
 public class ParseXSPF{
     public static void main(String args[]){
+	parse(args[0]);
     }
+
     public static HashMap<String,Song> parse(String filename){
 	HashMap<String,Song> sl = new HashMap<String,Song>();
 
@@ -38,6 +40,7 @@ public class ParseXSPF{
 			get_xspf_attr(attr,s);
 		    }
 		    sl.put(s.title+"-"+s.creator,s);
+		    System.out.println(s.title+"|||"+s.creator+"  "+s.location);//flag
 		}
 	    }
 	    else{

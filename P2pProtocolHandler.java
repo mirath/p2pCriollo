@@ -19,7 +19,8 @@ public class P2pProtocolHandler{
     private static HashMap<String,Song> SongDB;
     private static ArrayList<InetAddress> NodeDB; 
     private static ConcurrentHashMap<Integer,String> ConsultDB;
-    private String host;
+    private static String host;
+    private String id;
     
     public P2pProtocolHandler() {
         SongDB = null;
@@ -28,12 +29,17 @@ public class P2pProtocolHandler{
         host = null;
     }
     
-    public P2pProtocolHandler(String knownNodesFilePath, String musicLib,
-            String h){
+    public P2pProtocolHandler(String knownNodesFilePath, String musicLib,String id){
         ConsultDB = new ConcurrentHashMap<Integer,String>();
         NodeDB = parseKnownNodesFile(knownNodesFilePath);
         SongDB = parseSongFile(musicLib);
-        host = h;
+	this.id = id;
+	try{
+	    host = InetAddress.getLocalHost().toString();
+	}
+	catch(UnknownHostException e){
+	    System.out.println("Error recuperando la Ip del servidor: ");
+	}
     }
     
     private HashMap<String,Song> parseSongFile(String musicLib){
@@ -51,10 +57,11 @@ public class P2pProtocolHandler{
             Nodes.add(InetAddress.getByName(line));
         }
         catch(FileNotFoundException fnf) {
-            System.out.println("Error al abrir archivo "
-                    +knownNodesFilePath+" :"+fnf);
+            System.out.println("Error al abrir archivo: "+fnf);
         }
-        catch(IOException e){}
+        catch(IOException e){
+	    System.out.println("I/O Error: "+e);
+	}
         return Nodes;
     }
     
@@ -80,8 +87,9 @@ public class P2pProtocolHandler{
             if (!ConsultDB.isEmpty() && ConsultDB.containsKey(req.hash_id)) {
                 // No atiendo la consulta porque ya lo hice en el pasado
                 String emptyString = "";
-                P2pRequest nulAnswer = new P2pRequest(NULL_HASHID,0,
-                        emptyString.getBytes());
+                P2pRequest nulAnswer =
+		    new P2pRequest(NULL_HASHID,0,
+				   emptyString.getBytes());
                 os.writeObject(nulAnswer);
                 os.close();
                 return;
@@ -113,7 +121,7 @@ public class P2pProtocolHandler{
                         m = regex.matcher(sg.title);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
-                                    (sg.toString()+"@@"+this.host+"##");
+                                    (sg.toString()+"@@"+this.host+"@@"+this.id+"##");
                         }
                         m.reset();
                     }
@@ -130,7 +138,7 @@ public class P2pProtocolHandler{
                         System.out.println("Creator = "+sg.creator);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
-                                    (sg.toString()+"@@"+this.host+"##");
+                                    (sg.toString()+"@@"+this.host+"@@"+this.id+"##");
                         }
                         m.reset();
                     }

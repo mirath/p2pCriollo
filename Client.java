@@ -25,6 +25,7 @@ public class Client{
 	    ServerRequest svr = null;
 	    String ans = null;
 	    String[] resto;
+	    Song s = new Song();
 	    print_songs();    
 
 	    try{
@@ -34,7 +35,6 @@ public class Client{
 	    catch(IOException e){
 		System.exit(1);
 	    }
-
 	    switch(command.charAt(0)){
 	    case 'C':
 	    case 'c':
@@ -45,29 +45,32 @@ public class Client{
 		    // Búsqueda por autor ?
                     if (resto[1].compareTo("-a") == 0) {
                         String expr = parseSearchEntry(resto, 2);
-                        ServerRequest srv = new ServerRequest(client_socket,
-                                node_port, node, "consult", "A@@"+expr,
-                                download_path);
+                        ServerRequest srv =
+			    new ServerRequest(client_socket,
+					      node_port, node, "consult", "A@@"+expr,
+					      download_path);
                         ans = srv.run();
-                        System.out.println(ans);
+                        System.out.println(ans);//flag
                     }
                     // Búsqueda por título
                     else {
                         String expr = parseSearchEntry(resto, 2);
-                        ServerRequest srv = new ServerRequest(client_socket,
-                                node_port,node, "consult", "T@@"+expr,
-                                download_path);
+                        ServerRequest srv =
+			    new ServerRequest(client_socket,
+					      node_port,node, "consult", "T@@"+expr,
+					      download_path);
                         ans = srv.run();
-                        System.out.println(ans);
+                        System.out.println(ans);//flag
 		    }
 		}
 		// Búsqueda de todos los archivos
                 else {
-                    ServerRequest srv = new ServerRequest(client_socket, 
-                                node_port,node, "consult", "W@@", 
-                                download_path);
+                    ServerRequest srv =
+			new ServerRequest(client_socket, 
+					  node_port,node, "consult", "W@@", 
+					  download_path);
                     ans = srv.run();
-                    System.out.println(ans);
+                    System.out.println(ans);//flag
                 }
 		//*/
 
@@ -81,7 +84,8 @@ public class Client{
                 ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port,node, "reachable", "","");
                 ans = srv.run();
-                System.out.println(ans);
+                //System.out.println(ans);//flag
+		print_reachable(ans);
 		break;
 	    case 'D':
 	    case 'd':
@@ -99,8 +103,8 @@ public class Client{
 			break;
 		    }
 
-		    Song s = current_songs.get(index);
-		    svr = new ServerRequest(client_socket,node_port,node,
+		    s = current_songs.get(index);
+		    svr = new ServerRequest(client_socket,node_port,s.location,
 		    			    "download",s.title+"-"+s.creator,
 		    			    download_path);
 		    svr.run();
@@ -111,18 +115,37 @@ public class Client{
 		break;
 	    case 'P':
 	    case 'p':
-	        svr = new ServerRequest
-                        (client_socket,node_port,
-                        node,"download",
-                        "moulin rouge-mireille mathieu",download_path);
-	        svr.run();
+		resto = command.split("\\s");
+	        if(resto.length > 1){
+		    int index = Integer.parseInt(resto[1]);
+
+		    if(index >= current_songs.size()){
+			System.out.println("La cancion con el id "+index+" no existe");
+			break;
+		    }
+
+		    s = current_songs.get(index);
+		    svr = new ServerRequest(client_socket,node_port,s.location,
+		    			    "download",s.title+"-"+s.creator,
+		    			    download_path);
+		    svr.run();
+		}
+		else{
+		    System.out.println("Comando Play malformado");
+		}
+
 		try{
 		    Runtime.getRuntime().exec(new String[]{"vlc",
-                        "moulin rouge-mireille mathieu.mp3"});
+							   s.title+"-"+s.creator+".mp3"});
 		}
 		catch(IOException e){
 		    System.out.println("I/O Error: "+e);
 		}
+	        // svr = new ServerRequest
+                //         (client_socket,node_port,
+                //         node,"download",
+                //         "moulin rouge-mireille mathieu",download_path);
+	        // svr.run();
 		break;
 	    case 'Q':
 	    case 'q':
@@ -177,6 +200,16 @@ public class Client{
 	return tab;
     }
 
+    private static void print_reachable(String r){
+	String rl[] = r.split("##");
+
+	for(int i=0; i < rl.length; ++i){
+	    System.out.println(rl[i]);
+	}
+
+	return;
+    }
+
     private static void print_songs(){
 	if (current_songs.size() <= 0){
 	    return;
@@ -192,7 +225,7 @@ public class Client{
 	for (int i = 0; i < current_songs.size(); ++i){
 	    String c = current_songs.get(i).creator;
 	    String t = current_songs.get(i).title;
-	    String l = current_songs.get(i).location;
+	    String l = current_songs.get(i).node_id;
 	    System.out.println(i + tab(d-number_of_digits(i)+sp)+
 			       c + tab(lc-c.length()+sp)+
 			       t + tab(lt-t.length()+sp)+
@@ -221,6 +254,7 @@ public class Client{
 	res.creator = song_data[0];
 	res.title = song_data[1];
 	res.location = song_data[2];
+	res.node_id = song_data[3];
 
 	return res;
     }
