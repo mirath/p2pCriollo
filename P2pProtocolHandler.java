@@ -35,7 +35,7 @@ public class P2pProtocolHandler{
         SongDB = parseSongFile(musicLib);
 	this.id = id;
 	try{
-	    host = InetAddress.getLocalHost().toString();
+	    host = InetAddress.getLocalHost().getHostAddress();
 	}
 	catch(UnknownHostException e){
 	    System.out.println("Error recuperando la Ip del servidor: ");
@@ -108,7 +108,7 @@ public class P2pProtocolHandler{
                 
                 if (st[0].compareTo("W") == 0) {
                     // Todas las canciones de la red
-                    resultadoFinal = SongDbToString(this.host);
+                    resultadoFinal = SongDbToString(this.id);
                 }
                 else if (st[0].compareTo("T") == 0) {
                     // Por título
@@ -185,7 +185,7 @@ public class P2pProtocolHandler{
         Iterator<Song> it = s.iterator();
         while (it.hasNext()) {
             Song se = it.next();
-            resp = resp.concat(se.toString()+"@@"+nodeID+"##");
+            resp = resp.concat(se.toString()+"@@"+this.host+"@@"+nodeID+"##");
         }
         return resp;
     }
