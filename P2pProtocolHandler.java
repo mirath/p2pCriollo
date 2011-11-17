@@ -9,8 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
- * @author jorge
+ * Manejador del protocolo p2p
  */
 public class P2pProtocolHandler{
     private final int  NULL_HASHID       = 0xffffffff;
@@ -34,9 +33,9 @@ public class P2pProtocolHandler{
     
     /**
      *
-     * @param knownNodesFilePath
-     * @param musicLib
-     * @param id
+     * @param knownNodesFilePath Localización de los nodos conocidos
+     * @param musicLib Localización de la librería
+     * @param id Identificador único del nodo
      */
     public P2pProtocolHandler(String knownNodesFilePath, String musicLib,String id){
         ConsultDB = new ConcurrentHashMap<Integer,String>();
@@ -78,9 +77,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param s
-     * @return
+     * Obtiene los datos del pedido a partir de una conección con el cliente
+     * @param s Socket por donde se obtiene el pedido p2p
+     * @return Objeto que contiene los datos del pedido
      */
     public P2pRequest getRequest(Socket s) {
         P2pRequest req = null;
@@ -97,9 +96,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param req
-     * @param cs
+     * Ejecuta un comando C
+     * @param req Parámetros del comando C
+     * @param cs Socket de comunicación
      */
     @SuppressWarnings({"static-access", "static-access"})
     public void makeConsult(P2pRequest req, Socket cs){
@@ -204,9 +203,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param nodeID
-     * @return
+     * Genera un string representativo de la base de datos de canciones
+     * @param nodeID Identificador único del nodo
+     * @return String representativo de la base de datos de canciones
      */
     @SuppressWarnings("static-access")
     public String SongDbToString(String nodeID) {
@@ -223,9 +222,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param req
-     * @param cs
+     * Ejecuta un comando A
+     * @param req Parámetros del comando A
+     * @param cs Socket de comunicación
      */
     public void makeReachable(P2pRequest req, Socket cs) {
         // Mandar respuesta al cliente
@@ -285,9 +284,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param req
-     * @param cs
+     * Ejecuta un comando D del lado del servidor
+     * @param req Parámetros del comando D del lado del servidor
+     * @param cs Socket de comunicación
      */
     public void sendSong(P2pRequest req, Socket cs) {
         // Nombre de archivo ?

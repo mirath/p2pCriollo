@@ -32,7 +32,7 @@ public class ConsultThread extends Thread {
      * @param pHandler maneja la conexión con el nodo vecino.
      */
     public ConsultThread(int i, String[] respuesta, InetAddress ip,
-           P2pRequest req, int port, P2pProtocolHandler pHandler) {
+			 P2pRequest req, int port, P2pProtocolHandler pHandler) {
         pos = i;
         result = respuesta;
         this.ip = ip;

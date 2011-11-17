@@ -2,7 +2,7 @@ import java.net.*;
 import java.io.*;
 
 /**
- *
+ * Hilo que atiene a un cliente
  */
 public class ClientRequestThread extends Thread{
     private final byte DOWNLOAD_HEXCODE  = 0x0;
