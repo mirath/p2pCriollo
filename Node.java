@@ -22,7 +22,7 @@ public class Node {
         set_params(args);
         
         try{
-	    System.out.println("Servidor "+node_id+" estableciendo puerto de escucha");//flag
+	    System.out.println("Servidor "+node_id+" estableciendo puerto de escucha");
             ServerSocket node_socket = new ServerSocket(node_port);
             Socket client_socket = null;
             
@@ -31,7 +31,7 @@ public class Node {
                     new P2pProtocolHandler(known_nodes_filepath,
 					   music_library_filepath, node_id);
             
-	    System.out.println("Servidor "+node_id+" listo para recibir ordenes");//flag
+	    System.out.println("Servidor "+node_id+" listo para recibir ordenes");
             //Loop principal del servidor
             while(true){
                 client_socket = node_socket.accept();
@@ -43,7 +43,9 @@ public class Node {
             System.out.println("Error al abrir archivo "
                     +known_nodes_filepath+" :"+fnf);
         }
-        catch(IOException e){}
+        catch(IOException e){
+	    System.out.println("I/O Error: "+e)
+	}
     }
     
     /**
