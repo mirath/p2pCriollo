@@ -1,7 +1,7 @@
 JAVAC = gcj
 OPS = -C
 LINK_OPS =
-NANOXMLPATH = redes/nanoxml/java/nanoxml-lite-2.2.3.jar
+NANOXMLPATH = /net/raquella/ldc/redes/nanoxml/java/nanoxml-lite-2.2.3.jar
 
 PARSER_OBJS = ParseXSPF.class Song.class $(NANOXMLPATH)
 NODE_OBJS = $(PARSER_OBJS) P2pRequest.class P2pProtocolHandler.class ConsultThread.class ClientRequestThread.class Node.class 

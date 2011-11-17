@@ -44,7 +44,7 @@ public class Node {
                     +known_nodes_filepath+" :"+fnf);
         }
         catch(IOException e){
-	    System.out.println("I/O Error: "+e)
+	    System.out.println("I/O Error: "+e);
 	}
     }
     

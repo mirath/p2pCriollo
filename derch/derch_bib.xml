@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<playlist version="1" xmlns="http://xspf.org/ns/0/">
+<trackList>
+<track>
+<location>file:///preg/06-39559/p2p/derch/derch_Fix_You.mp3</location>
+<title>Fix You</title>
+<creator>Coldplay</creator>
+<album>X Y</album>
+<trackNum>4</trackNum>
+<duration>323000</duration>
+</track>
+<track>
+<location>file:///preg/06-39559/p2p/derch/derch_Talk.mp3</location>
+<title>Talk</title>
+<creator>Coldplay</creator>
+<album>X Y</album>
+<trackNum>5</trackNum>
+<duration>382000</duration>
+</track>
+</trackList>
+<extension application="http://amarok.kde.org">
+<queue/>
+</extension>
+</playlist>
+
