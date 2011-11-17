@@ -1,33 +1,33 @@
 /**
- * Abstracci髇 de canci髇
+ * Abstracci贸n de canci贸n.
  */
 public class Song{
     /**
-     *Identificador 鷑ico del nodo que tiene la canci髇
+     *Identificador 煤nico del nodo que tiene la canci贸n.
      */
     public String node_id;
 
     /**
-     *Localizaci髇 de la canci髇
+     *Localizaci贸n de la canci贸n.
      */
     public String location;
 
     /**
-     *T韙ulo de la canci髇
+     *T铆tulo de la canci贸n.
      */
     public String title;
 
     /**
-     *Creador de la canci髇
+     *Creador de la canci贸n.
      */
     public String creator;
     
     /**
      * 
-     * @param l Localizaci髇 de la canci髇
-     * @param t T韙ulo de la canci髇
-     * @param c Creador de la canci髇
-     * @param n Identificador 鷑ico del nodo que tiene la canci髇
+     * @param l Localizaci贸n de la canci贸n.
+     * @param t T铆tulo de la canci贸n.
+     * @param c Creador de la canci贸n.
+     * @param n Identificador 煤nico del nodo que tiene la canci贸n.
      */
     public Song(String l, String t, String c, String n){
 	location = l.toLowerCase();
@@ -37,13 +37,13 @@ public class Song{
     }
 
     /**
-     *Constructor por defecto
+     *Constructor por defecto.
      */
     public Song(){}
     
     /**
-     * Retorna una representaci髇 en String de esta canci髇
-     * @return String representativo de la canci髇
+     * Retorna una representaci贸n en String de esta canci贸n.
+     * @return String representativo de la canci贸n.
      */
     @Override
     public String toString() {

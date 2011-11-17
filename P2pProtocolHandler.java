@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Manejador del protocolo p2p
+ * Manejador del protocolo p2p.
  */
 public class P2pProtocolHandler{
     private final int  NULL_HASHID       = 0xffffffff;
@@ -33,9 +33,9 @@ public class P2pProtocolHandler{
     
     /**
      * Constructor.
-     * @param knownNodesFilePath Localización de los nodos conocidos
-     * @param musicLib Localización de la librería
-     * @param id Identificador único del nodo
+     * @param knownNodesFilePath Localización de los nodos conocidos.
+     * @param musicLib Localización de la librería.
+     * @param id Identificador único del nodo.
      */
     public P2pProtocolHandler(String knownNodesFilePath, String musicLib,String id){
         ConsultDB = new ConcurrentHashMap<Integer,String>();
@@ -54,7 +54,7 @@ public class P2pProtocolHandler{
      * 
      * Parsea la librería de música XSPF.
      * @param musicLib ruta a la biblioteca de música.
-     * @return Un HashMap que mapea de "autor-título" a la estructura 
+     * @return Un HashMap que mapea de "autor-título" a la estructura.
      * canción. La estructura canción contiene información adicional.
      */
     private HashMap<String,Song> parseSongFile(String musicLib){
@@ -91,9 +91,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     * Obtiene los datos del pedido a partir de una conexión con el cliente
-     * @param s Socket por donde se obtiene el pedido p2p
-     * @return Objeto que contiene los datos del pedido
+     * Obtiene los datos del pedido a partir de una conexión con el cliente.
+     * @param s Socket por donde se obtiene el pedido p2p.
+     * @return Objeto que contiene los datos del pedido.
      */
     public P2pRequest getRequest(Socket s) {
         P2pRequest req = null;
@@ -112,9 +112,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     * Ejecuta un comando C
-     * @param req Parámetros del comando C
-     * @param cs Socket de comunicación
+     * Ejecuta un comando C.
+     * @param req Parámetros del comando C.
+     * @param cs Socket de comunicación.
      */
     public void makeConsult(P2pRequest req, Socket cs){
         // Crear comunicación con el cliente
@@ -235,9 +235,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     * Ejecuta un comando A
-     * @param req Parámetros del comando A
-     * @param cs Socket de comunicación
+     * Ejecuta un comando A.
+     * @param req Parámetros del comando A.
+     * @param cs Socket de comunicación.
      */
     public void makeReachable(P2pRequest req, Socket cs) {
         // Mandar respuesta al cliente
@@ -297,9 +297,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     * Ejecuta un comando D del lado del servidor
-     * @param req Parámetros del comando D del lado del servidor
-     * @param cs Socket de comunicación
+     * Ejecuta un comando D del lado del servidor.
+     * @param req Parámetros del comando D del lado del servidor.
+     * @param cs Socket de comunicación.
      */
     public void sendSong(P2pRequest req, Socket cs) {
         // Nombre de archivo ?

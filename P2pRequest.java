@@ -2,7 +2,7 @@
 import java.io.Serializable;
 
 /**
- * Abstracción de un pedido P2p
+ * AbstracciÃ³n de un pedido P2p.
  */
 public class P2pRequest implements Serializable {
     static final long serialVersionUID = 0;
@@ -12,7 +12,7 @@ public class P2pRequest implements Serializable {
     byte[] data;
 	
     /**
-     * Constructor por defecto
+     * Constructor por defecto.
      */
     public P2pRequest(){
 	op_code = 0;
@@ -22,9 +22,9 @@ public class P2pRequest implements Serializable {
 	
     /**
      *
-     * @param oc Código de operación
-     * @param hi Identificador de pedido
-     * @param d  Datos
+     * @param oc CÃ³digo de operaciÃ³n.
+     * @param hi Identificador de pedido.
+     * @param d  Datos.
      */
     public P2pRequest(int oc, int hi,byte[] d){
 	op_code = oc;

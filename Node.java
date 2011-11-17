@@ -2,7 +2,7 @@ import java.net.*;
 import java.io.*;
 
 /**
- * Clase del servidor
+ * Clase del servidor.
  */
 public class Node {
     private static int node_port;
@@ -13,12 +13,12 @@ public class Node {
     
     /**
      * 
-     * @param args Argumentos de la lÌnea de comandos
+     * @param args Argumentos de la l√≠nea de comandos.
      */
     public static void main(String[] args){
         //mainThread = Thread.currentThread();
         
-        //Parseo de par·metros
+        //Parseo de par√°metros
         set_params(args);
         
         try{
@@ -49,8 +49,8 @@ public class Node {
     }
     
     /**
-     * Parsea los argumentos de la lÌnea de comandos
-     * @param args Argumentos de la lÌnea de comandos
+     * Parsea los argumentos de la l√≠nea de comandos.
+     * @param args Argumentos de la l√≠nea de comandos.
      */
     private static void set_params(String args[]){
         char op = '\0';

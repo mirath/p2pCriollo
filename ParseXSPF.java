@@ -11,10 +11,10 @@ public class ParseXSPF{
     }
 
     /**
-     * Parser de archivos XSPF
-     * @param filename Archivo XSPF que se debe parsear
-     * @return HashMap de la concatenación del título de la canción
-     *         con el autor de la canción a objetos de tipo Song
+     * Parser de archivos XSPF.
+     * @param filename Archivo XSPF que se debe parsear.
+     * @return HashMap de la concatenaciÃ³n del tÃ­tulo de la canciÃ³n
+     *         con el autor de la canciÃ³n a objetos de tipo Song.
      */
     @SuppressWarnings("unchecked")
     public static HashMap<String,Song> parse(String filename){
@@ -35,7 +35,8 @@ public class ParseXSPF{
 		       (trackList.getName().compareTo("trackList") != 0));
 
 		if(trackList == null){
-		    System.out.println("Error, lista de reproduccion mal formateada: No se encontro trackList");
+		    System.out.println("Error, lista de reproduccion mal formateada: "
+                            + "No se encontro trackList");
 		    System.exit(1);
 		}
 
@@ -53,7 +54,8 @@ public class ParseXSPF{
 		}
 	    }
 	    else{
-		System.out.println("Error, lista de reproduccion mal formateada: No se encontró elemento playlist en el tope del árbol");
+		System.out.println("Error, lista de reproduccion mal formateada: "
+                        + "No se encontrÃ³ elemento playlist en el tope del Ã¡rbol");
 		System.exit(1);
 	    }
 	}
@@ -63,10 +65,10 @@ public class ParseXSPF{
     }
 
     /**
-     * Escribe un atributo de una canción almacenado en el archivo
-     * xspf en un objeto Song
-     * @param attr Atributo XSPF
-     * @param s Objeto Song
+     * Escribe un atributo de una canciÃ³n almacenado en el archivo
+     * xspf en un objeto Song.
+     * @param attr Atributo XSPF.
+     * @param s Objeto Song.
      */
     public static void get_xspf_attr(XMLElement attr, Song s){
 	String attr_name = attr.getName();

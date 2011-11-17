@@ -12,7 +12,8 @@ public class Client{
     private static String node = null;
     private static String download_path = null;
     private static ArrayList<Song> current_songs = new ArrayList<Song>();
-    private static HashMap<String,Song> downloaded_songs = new HashMap<String,Song>();
+    private static HashMap<String,Song> downloaded_songs = new 
+            HashMap<String,Song>();
 
     /**
      *
@@ -59,7 +60,7 @@ public class Client{
 					      node_port, node, "consult", "A@@"+expr,
 					      download_path);
                         ans = srv.run();
-
+                    }
                     // Búsqueda por título
                     else {
                         String expr = parseSearchEntry(resto, 2);
@@ -158,11 +159,6 @@ public class Client{
 		catch(IOException e){
 		    System.out.println("I/O Error: "+e);
 		}
-	        // svr = new ServerRequest
-                //         (client_socket,node_port,
-                //         node,"download",
-                //         "moulin rouge-mireille mathieu",download_path);
-	        // svr.run();
 		break;
 
 	    case 'Q':
@@ -178,7 +174,7 @@ public class Client{
     }
 
     /**
-     * Devuelve el número de caracteres
+     * Devuelve el número de caracteres.
      * del título con más carácteres en su nombre.
      * @param songs Canciones que serán analizadas.
      * @return Número de carácteres del título mas largo.
@@ -332,7 +328,7 @@ public class Client{
     }
 
     /**
-     * Parsea los argumentos del comando C
+     * Parsea los argumentos del comando C.
      * @param resto contiene la información de la consulta.
      * @param startPoint índice desde donde se itera para extraer consulta.
      * @return Objeto Song con la información de la canción.

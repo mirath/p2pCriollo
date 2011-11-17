@@ -14,8 +14,8 @@ public class ClientRequestThread extends Thread{
 
     /**
      * 
-     * @param cs Socket por donde se establece la comunicaci�n con el cliente
-     * @param p2ph Manejador del protocolo p2p
+     * @param cs Socket por donde se establece la comunicación con el cliente.
+     * @param p2ph Manejador del protocolo p2p.
      */
     public ClientRequestThread(Socket cs, P2pProtocolHandler p2ph){
 	client_socket = cs;
@@ -23,7 +23,7 @@ public class ClientRequestThread extends Thread{
     }
     
     /**
-     * Procesa el request del cliente
+     * Procesa la petición del cliente.
      */
     @Override
     public void run(){
