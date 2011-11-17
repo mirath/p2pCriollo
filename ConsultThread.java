@@ -5,7 +5,6 @@ import java.net.Socket;
 
 /**
  *
- * @author jorge
  */
 public class ConsultThread extends Thread {
     int pos;
@@ -25,7 +24,7 @@ public class ConsultThread extends Thread {
      * @param pHandler
      */
     public ConsultThread(int i, String[] respuesta, InetAddress ip,
-           P2pRequest req, int port, P2pProtocolHandler pHandler) {
+			 P2pRequest req, int port, P2pProtocolHandler pHandler) {
         pos = i;
         result = respuesta;
         this.ip = ip;
@@ -35,7 +34,7 @@ public class ConsultThread extends Thread {
     }
    
    /**
-    *
+    * Procesar la consulta
     */
    @Override
    public void run() {
