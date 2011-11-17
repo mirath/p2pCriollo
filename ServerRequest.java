@@ -5,7 +5,6 @@ import java.util.Random;
 
 /**
  *
- * @author jorge
  */
 public class ServerRequest {
     private final byte DOWNLOAD_HEXCODE  = 0x0;

@@ -2,8 +2,7 @@
 import java.io.Serializable;
 
 /**
- * 
- * @author jorge
+ * Abstracción de un pedido P2p
  */
 public class P2pRequest implements Serializable {
     int op_code;
@@ -21,9 +20,9 @@ public class P2pRequest implements Serializable {
 	
     /**
      *
-     * @param oc
-     * @param hi
-     * @param d
+     * @param oc Código de operación
+     * @param hi Identificador de pedido
+     * @param d  Datos
      */
     public P2pRequest(int oc, int hi,byte[] d){
 	op_code = oc;

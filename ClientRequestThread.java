@@ -3,7 +3,6 @@ import java.io.*;
 
 /**
  *
- * @author jorge
  */
 public class ClientRequestThread extends Thread{
     private final byte DOWNLOAD_HEXCODE  = 0x0;
@@ -15,9 +14,9 @@ public class ClientRequestThread extends Thread{
     private P2pProtocolHandler p2pHandler;
 
     /**
-     *
-     * @param cs
-     * @param p2ph
+     * 
+     * @param cs Socket por donde se establece la comunicación con el cliente
+     * @param p2ph Manejador del protocolo p2p
      */
     public ClientRequestThread(Socket cs, P2pProtocolHandler p2ph){
 	client_socket = cs;
@@ -25,7 +24,7 @@ public class ClientRequestThread extends Thread{
     }
     
     /**
-     * 
+     * Procesa el request del cliente
      */
     @Override
     public void run(){
