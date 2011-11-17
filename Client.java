@@ -253,11 +253,18 @@ public class Client{
      * @return String de espacios en blanco
      */
     private static void print_reachable(String r){
+	if (r.length() == 0)
+	    System.out.println("No se encontraron nodos alcanzables");
+
 	String rl[] = r.split("##");
 
-	for(int i=0; i < rl.length; ++i){
-	    System.out.println(rl[i]);
-	}
+	HashSet s = new HashSet();
+	for(int i = 0; i < rl.length; ++i)
+	    s.add(rl[i]);
+
+	Iterator i = s.iterator();
+	while(i.hasNext())
+	    System.out.println(i.next());
 
 	return;
     }
