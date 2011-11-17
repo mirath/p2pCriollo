@@ -2,6 +2,9 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ *
+ */
 public class Client{
 
     private static Socket client_socket = null;
@@ -10,8 +13,12 @@ public class Client{
     private static String download_path = null;
     private static ArrayList<Song> current_songs = new ArrayList<Song>();
     private static P2pProtocolHandler p2pHandler = new P2pProtocolHandler();
+    private static HashMap<String,Song> downloaded_songs = new HashMap<String,Song>();
 
-
+    /**
+     *
+     * @param args
+     */
     public static void main(String args[]){
 	BufferedReader console = new BufferedReader
                 (new InputStreamReader(System.in));
@@ -25,6 +32,7 @@ public class Client{
 	    ServerRequest svr = null;
 	    String ans = null;
 	    String[] resto;
+	    Song s = new Song();
 	    print_songs();    
 
 	    try{
@@ -35,69 +43,63 @@ public class Client{
 		System.exit(1);
 	    }
 
+	    if(command.length() <= 0)
+		continue;
+
 	    switch(command.charAt(0)){
 	    case 'C':
 	    case 'c':
-		/**/
 		resto = command.split("\\s");
 	        // Preparar cadena
                 if (resto.length > 1) {
 		    // Búsqueda por autor ?
                     if (resto[1].compareTo("-a") == 0) {
                         String expr = parseSearchEntry(resto, 2);
-                        ServerRequest srv = new ServerRequest(client_socket,
-                                node_port, node, "consult", "A@@"+expr,
-                                download_path);
+                        ServerRequest srv =
+			    new ServerRequest(client_socket,
+					      node_port, node, "consult", "A@@"+expr,
+					      download_path);
                         ans = srv.run();
-                        System.out.println("Respuesta");
-                        System.out.println(ans);
-                        System.out.println("Tamaño de la respuesta = "+ans.length());
+			//System.out.println(ans);//flag
                     }
                     // Búsqueda por título
                     else {
                         String expr = parseSearchEntry(resto, 2);
-                        ServerRequest srv = new ServerRequest(client_socket,
-                                node_port,node, "consult", "T@@"+expr,
-                                download_path);
+                        ServerRequest srv =
+			    new ServerRequest(client_socket,
+					      node_port,node, "consult", "T@@"+expr,
+					      download_path);
                         ans = srv.run();
-                        System.out.println("Respuesta");
-                        System.out.println(ans);
-                        System.out.println("Tamaño de la respuesta = "+ans.length());
+			//System.out.println(ans);//flag
 		    }
 		}
 		// Búsqueda de todos los archivos
                 else {
-                    ServerRequest srv = new ServerRequest(client_socket, 
-                                node_port,node, "consult", "W@@", 
-                                download_path);
+                    ServerRequest srv =
+			new ServerRequest(client_socket, 
+					  node_port,node, "consult", "W@@", 
+					  download_path);
                     ans = srv.run();
-                    System.out.println("Respuesta");
-                    System.out.println(ans);
-                    System.out.println("Tamaño de la respuesta = "+ans.length());
+                    //System.out.println(ans);//flag
                 }
-		//*/
-
-		//String ans_aux = "Metallica@@One@@sagitario.ac.labf.usb.ve##Brian Backett@@Gemini@@159.90.9.211";
 	    
 	        current_songs = parse_songs(ans);
 
 		break;
+
             case 'A':
 	    case 'a':
                 ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port,node, "reachable", "","");
                 ans = srv.run();
-                System.out.println(ans);
+                //System.out.println(ans);//flag
+		print_reachable(ans);
 		break;
+
 	    case 'D':
 	    case 'd':
 		resto = command.split("\\s");
 	        if(resto.length > 1){
-		    // svr = new ServerRequest(client_socket, node_port, 
-		    //                         node, "download", "one.mp3",download_path);
-		    // svr = new ServerRequest(client_socket,node_port,node,
-		    // 			    "download","moulin rouge-mireille mathieu",
-		    // 			    download_path);
 		    int index = Integer.parseInt(resto[1]);
 
 		    if(index >= current_songs.size()){
@@ -105,35 +107,75 @@ public class Client{
 			break;
 		    }
 
-		    Song s = current_songs.get(index);
-		    svr = new ServerRequest(client_socket,node_port,node,
+		    s = current_songs.get(index);
+		    svr = new ServerRequest(client_socket,node_port,s.location,
 		    			    "download",s.title+"-"+s.creator,
 		    			    download_path);
-		    svr.run();
+		    String res = svr.run();
+
+		    if(res != null){
+			Song ds = new Song();
+			ds.title   = s.title;
+			ds.creator = s.creator;
+			downloaded_songs.put(s.title+"-"+s.creator,ds);
+		    }
 		}
 		else{
 		    System.out.println("Comando Download malformado");
 		}
 		break;
+
 	    case 'P':
 	    case 'p':
-	        svr = new ServerRequest
-                        (client_socket,node_port,
-                        node,"download",
-                        "moulin rouge-mireille mathieu",download_path);
-	        svr.run();
+		resto = command.split("\\s");
+	        if(resto.length > 1){
+		    int index = Integer.parseInt(resto[1]);
+
+		    if(index >= current_songs.size()){
+			System.out.println("La cancion con el id "+index+" no existe");
+			break;
+		    }
+
+		    s = current_songs.get(index);
+
+		    if(downloaded_songs.get(s.title+"-"+s.creator) == null){
+			svr = new ServerRequest(client_socket,node_port,s.location,
+						"download",s.title+"-"+s.creator,
+						download_path);
+			String res = svr.run();
+
+			if(res != null){
+			    Song ds = new Song();
+			    ds.title   = s.title;
+			    ds.creator = s.creator;
+			    downloaded_songs.put(s.title+"-"+s.creator,ds);
+			}
+		    }
+		    else{ System.out.println("Song already here"); } //flag
+		}
+		else{
+		    System.out.println("Comando Play malformado");
+		}
+
 		try{
-		    Runtime.getRuntime().exec(new String[]{"vlc",
-                        "moulin rouge-mireille mathieu.mp3"});
+		    Runtime.getRuntime().exec(new String[]{"cvlc",
+							   download_path+"/"+s.title+"-"+s.creator+".mp3"});
 		}
 		catch(IOException e){
 		    System.out.println("I/O Error: "+e);
 		}
+	        // svr = new ServerRequest
+                //         (client_socket,node_port,
+                //         node,"download",
+                //         "moulin rouge-mireille mathieu",download_path);
+	        // svr.run();
 		break;
+
 	    case 'Q':
 	    case 'q':
 		running = false;
 	        break;
+
 	    default:
 		System.out.println("Comando invalido");
 		break;
@@ -183,6 +225,16 @@ public class Client{
 	return tab;
     }
 
+    private static void print_reachable(String r){
+	String rl[] = r.split("##");
+
+	for(int i=0; i < rl.length; ++i){
+	    System.out.println(rl[i]);
+	}
+
+	return;
+    }
+
     private static void print_songs(){
 	if (current_songs.size() <= 0){
 	    return;
@@ -198,7 +250,7 @@ public class Client{
 	for (int i = 0; i < current_songs.size(); ++i){
 	    String c = current_songs.get(i).creator;
 	    String t = current_songs.get(i).title;
-	    String l = current_songs.get(i).location;
+	    String l = current_songs.get(i).node_id;
 	    System.out.println(i + tab(d-number_of_digits(i)+sp)+
 			       c + tab(lc-c.length()+sp)+
 			       t + tab(lt-t.length()+sp)+
@@ -210,6 +262,11 @@ public class Client{
 
     private static ArrayList<Song> parse_songs(String ss){
 	ArrayList<Song> songs = new ArrayList<Song>();
+
+	if(ss.length() <= 0){
+	    System.out.println("No se encontraron canciones");
+	    return songs;
+	}
 	
 	String ss_strs[] = ss.split("##");
 
@@ -227,6 +284,7 @@ public class Client{
 	res.creator = song_data[0];
 	res.title = song_data[1];
 	res.location = song_data[2];
+	res.node_id = song_data[3];
 
 	return res;
     }

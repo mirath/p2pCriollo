@@ -2,9 +2,24 @@ import nanoxml.*;
 import java.util.*;
 import java.io.*;
 
+/**
+ *
+ * @author jorge
+ */
 public class ParseXSPF{
+    /**
+     * 
+     * @param args
+     */
     public static void main(String args[]){
+	parse(args[0]);
     }
+
+    /**
+     *
+     * @param filename
+     * @return
+     */
     public static HashMap<String,Song> parse(String filename){
 	HashMap<String,Song> sl = new HashMap<String,Song>();
 
@@ -38,6 +53,7 @@ public class ParseXSPF{
 			get_xspf_attr(attr,s);
 		    }
 		    sl.put(s.title+"-"+s.creator,s);
+		    System.out.println(s.title+"|||"+s.creator+"  "+s.location);//flag
 		}
 	    }
 	    else{
@@ -50,6 +66,11 @@ public class ParseXSPF{
 	return sl;
     }
 
+    /**
+     *
+     * @param attr
+     * @param s
+     */
     public static void get_xspf_attr(XMLElement attr, Song s){
 	String attr_name = attr.getName();
 	

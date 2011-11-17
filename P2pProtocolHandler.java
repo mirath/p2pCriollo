@@ -8,19 +8,23 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ * @author jorge
+ */
 public class P2pProtocolHandler{
-    //    private final byte DOWNLOAD_HEXCODE  = 0x0;
-    //    private final byte CONSULT_HEXCODE   = 0x2;
-    //    private final byte REACHABLE_HEXCODE = 0x3;
-    //    private final byte NULL_HEXCODE      = 0x4;
     private final int  NULL_HASHID       = 0xffffffff;
     private final int  APP_PORT          = 5947;
     // Estructuras de control
     private static HashMap<String,Song> SongDB;
     private static ArrayList<InetAddress> NodeDB;
     private static ConcurrentHashMap<Integer,String> ConsultDB;
-    private String host;
+    private static String host;
+    private String id;
     
+    /**
+     *
+     */
     public P2pProtocolHandler() {
         SongDB = null;
         NodeDB = null;
@@ -28,12 +32,23 @@ public class P2pProtocolHandler{
         host = null;
     }
     
-    public P2pProtocolHandler(String knownNodesFilePath, String musicLib,
-            String h){
+    /**
+     *
+     * @param knownNodesFilePath
+     * @param musicLib
+     * @param id
+     */
+    public P2pProtocolHandler(String knownNodesFilePath, String musicLib,String id){
         ConsultDB = new ConcurrentHashMap<Integer,String>();
         NodeDB = parseKnownNodesFile(knownNodesFilePath);
         SongDB = parseSongFile(musicLib);
-        host = h;
+	this.id = id;
+	try{
+	    host = InetAddress.getLocalHost().getHostAddress();
+	}
+	catch(UnknownHostException e){
+	    System.out.println("Error recuperando la Ip del servidor: ");
+	}
     }
     
     private HashMap<String,Song> parseSongFile(String musicLib){
@@ -54,13 +69,19 @@ public class P2pProtocolHandler{
        
         }
         catch(FileNotFoundException fnf) {
-            System.out.println("Error al abrir archivo "
-                    +knownNodesFilePath+" :"+fnf);
+            System.out.println("Error al abrir archivo: "+fnf);
         }
-        catch(IOException e){}
+        catch(IOException e){
+	    System.out.println("I/O Error: "+e);
+	}
         return Nodes;
     }
     
+    /**
+     *
+     * @param s
+     * @return
+     */
     public P2pRequest getRequest(Socket s) {
         P2pRequest req = null;
         try {
@@ -75,6 +96,12 @@ public class P2pProtocolHandler{
         return req;
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     */
+    @SuppressWarnings({"static-access", "static-access"})
     public void makeConsult(P2pRequest req, Socket cs){
         // Crear comunicación con el cliente
         try {
@@ -83,8 +110,9 @@ public class P2pProtocolHandler{
             if (!ConsultDB.isEmpty() && ConsultDB.containsKey(req.hash_id)) {
                 // No atiendo la consulta porque ya lo hice en el pasado
                 String emptyString = "";
-                P2pRequest nulAnswer = new P2pRequest(NULL_HASHID,0,
-                        emptyString.getBytes());
+                P2pRequest nulAnswer =
+		    new P2pRequest(NULL_HASHID,0,
+				   emptyString.getBytes());
                 os.writeObject(nulAnswer);
                 os.close();
                 return;
@@ -103,7 +131,7 @@ public class P2pProtocolHandler{
                 
                 if (st[0].compareTo("W") == 0) {
                     // Todas las canciones de la red
-                    resultadoFinal = SongDbToString(this.host);
+                    resultadoFinal = SongDbToString(this.id);
                 }
                 else if (st[0].compareTo("T") == 0) {
                     // Por título
@@ -116,7 +144,8 @@ public class P2pProtocolHandler{
                         m = regex.matcher(sg.title);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
-                                    (sg.toString()+"@@"+this.host+"##");
+                                    (sg.toString()+"@@"+
+                                    P2pProtocolHandler.host+"@@"+this.id+"##");
                         }
                         m.reset();
                     }
@@ -132,7 +161,8 @@ public class P2pProtocolHandler{
                         m = regex.matcher(sg.creator);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
-                                    (sg.toString()+"@@"+this.host+"##");
+                                    (sg.toString()+"@@"+
+                                    P2pProtocolHandler.host+"@@"+this.id+"##");
                         }
                         m.reset();
                     }
@@ -173,6 +203,12 @@ public class P2pProtocolHandler{
         }
     }
     
+    /**
+     *
+     * @param nodeID
+     * @return
+     */
+    @SuppressWarnings("static-access")
     public String SongDbToString(String nodeID) {
         String resp = "";
         // Obtener todas las canciones de SongDB
@@ -180,16 +216,23 @@ public class P2pProtocolHandler{
         Iterator<Song> it = s.iterator();
         while (it.hasNext()) {
             Song se = it.next();
-            resp = resp.concat(se.toString()+"@@"+nodeID+"##");
+            resp = resp.concat(se.toString()+"@@"+
+                    P2pProtocolHandler.host+"@@"+nodeID+"##");
         }
         return resp;
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     */
     public void makeReachable(P2pRequest req, Socket cs) {
         // Mandar respuesta al cliente
         String resp = "";
         try {
-            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            ObjectOutputStream os = new ObjectOutputStream
+                    (cs.getOutputStream());
             // Consulta repetida ?
             if (!ConsultDB.isEmpty() && ConsultDB.containsKey(req.hash_id)) {
                 // No atiendo la consulta porque ya lo hice en el pasado
@@ -241,6 +284,11 @@ public class P2pProtocolHandler{
         
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     */
     public void sendSong(P2pRequest req, Socket cs) {
         // Nombre de archivo ?
         String nombreMP3 = new String(req.data);
@@ -255,7 +303,8 @@ public class P2pProtocolHandler{
             // Preparar P2pRequest con respuesta
             P2pRequest respuesta = new P2pRequest(NULL_HASHID,0,contenidoMP3);
             // Mandar respuesta al cliente
-            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            ObjectOutputStream os = new ObjectOutputStream
+                    (cs.getOutputStream());
             os.writeObject(respuesta);
             os.close();
             fin.close();
@@ -269,14 +318,24 @@ public class P2pProtocolHandler{
         }
     }
     
-    public void requestSong(P2pRequest req, String download_path, Socket cs){
-        if(download_path == null){
-            System.out.println("Path de descarga nulo");
-            System.exit(1);
-        }
+    /**
+     *
+     * @param req
+     * @param download_path
+     * @param cs
+     * @return
+     */
+    public boolean requestSong(P2pRequest req, String download_path, Socket cs){
+	boolean result = true;
+
+	if(download_path == null){
+	    System.out.println("Path de descarga nulo");
+	    System.exit(1);
+	}
         try {
             // Construir salida hacia el servidor
-            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            ObjectOutputStream os = new ObjectOutputStream
+                    (cs.getOutputStream());
             // Mandar petición al servidor
             os.writeObject(req);
             // Ahora esperar respuesta con archivo
@@ -292,13 +351,22 @@ public class P2pProtocolHandler{
         }
         catch(ClassNotFoundException cnfe) {
             System.out.println("Class not found: "+cnfe);
+	    result = false;
         }
         catch(IOException e) {
             System.out.println("Error I/O: "+e);
+	    result = false;
         }
-        return;
+
+        return result;
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     * @return
+     */
     public String requestConsult(P2pRequest req, Socket cs) {
         String result = null;
         // Contruir salida hacia el servidor
@@ -320,11 +388,18 @@ public class P2pProtocolHandler{
         return result;
     }
     
+    /**
+     *
+     * @param req
+     * @param cs
+     * @return
+     */
     public String requestReachable(P2pRequest req, Socket cs) {
         String result = null;
         // Construir salida hacia el servidor
         try {
-            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            ObjectOutputStream os = new ObjectOutputStream
+                    (cs.getOutputStream());
             // Mandar petición al servidor
             os.writeObject(req);
             // Ahora esperar respuesta con string

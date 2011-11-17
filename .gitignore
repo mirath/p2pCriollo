@@ -12,3 +12,8 @@ Client
 .\#
 *.xspf
 *.mp3
+dist
+nbproject
+manifest.mf
+build.xml
+

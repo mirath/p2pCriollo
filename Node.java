@@ -1,6 +1,10 @@
 import java.net.*;
 import java.io.*;
 
+/**
+ * 
+ * @author jorge
+ */
 public class Node {
     private static int node_port;
     private static String node_id;
@@ -8,6 +12,10 @@ public class Node {
     private static String known_nodes_filepath;
     //public static Thread mainThread;
     
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args){
         //mainThread = Thread.currentThread();
         
@@ -22,7 +30,7 @@ public class Node {
             // Crear P2pProtocolHandler genérico 
             P2pProtocolHandler genericHandler = 
                     new P2pProtocolHandler(known_nodes_filepath,
-                            music_library_filepath, node_id);
+					   music_library_filepath, node_id);
             
 	    System.out.println("Servidor "+node_id+" listo para recibir ordenes");//flag
             //Loop principal del servidor
@@ -71,32 +79,3 @@ public class Node {
         }
     }
 }
-
-// class CloseSockets extends Thread{
-//     ServerSocket s_sockets[];
-//     Socket c_sockets[];
-//     public CloseSockets(ServerSocket ss[],Socket cs[]){
-// 	s_sockets = ss;
-// 	c_sockets = cs;
-//     }
-
-//     public CloseSockets(ServerSocket ss){
-// 	s_sockets = new ServerSocket[1];
-// 	s_sockets[0] = ss;
-// 	c_sockets = null;
-//     }
-
-//     public void run(){
-// 	//int i = 0;
-// 	Node.mainThread.interrupt();
-// 	System.out.println("tortuga");
-// 	// for (i; i < sockets.length; i++){
-// 	//     try{
-// 	// 	sockets[i].close();
-// 	//     }
-// 	//     catch(IOException){
-// 	// 	System.out.println("Error cerrando socket");
-// 	//     }
-// 	// }
-//     }
-// }
