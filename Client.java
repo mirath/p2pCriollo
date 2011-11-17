@@ -59,8 +59,7 @@ public class Client{
 					      node_port, node, "consult", "A@@"+expr,
 					      download_path);
                         ans = srv.run();
-			//System.out.println(ans);//flag
-                    }
+
                     // Búsqueda por título
                     else {
                         String expr = parseSearchEntry(resto, 2);
@@ -69,7 +68,6 @@ public class Client{
 					      node_port,node, "consult", "T@@"+expr,
 					      download_path);
                         ans = srv.run();
-			//System.out.println(ans);//flag
 		    }
 		}
 		// Búsqueda de todos los archivos
@@ -79,7 +77,6 @@ public class Client{
 					  node_port,node, "consult", "W@@", 
 					  download_path);
                     ans = srv.run();
-                    //System.out.println(ans);//flag
                 }
 	    
 	        current_songs = parse_songs(ans);
@@ -91,7 +88,6 @@ public class Client{
                 ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port,node, "reachable", "","");
                 ans = srv.run();
-                //System.out.println(ans);//flag
 		print_reachable(ans);
 		break;
 
@@ -150,7 +146,6 @@ public class Client{
 			    downloaded_songs.put(s.title+"-"+s.creator,ds);
 			}
 		    }
-		    else{ System.out.println("Song already here"); } //flag
 		}
 		else{
 		    System.out.println("Comando Play malformado");

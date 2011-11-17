@@ -50,11 +50,10 @@ public class ParseXSPF{
 			get_xspf_attr(attr,s);
 		    }
 		    sl.put(s.title+"-"+s.creator,s);
-		    System.out.println(s.title+"|||"+s.creator+"  "+s.location);//flag
 		}
 	    }
 	    else{
-		System.out.println("Error, lista de reproduccion mal formateada: No se encontro elemento playlist en el tope del arbol");
+		System.out.println("Error, lista de reproduccion mal formateada: No se encontró elemento playlist en el tope del árbol");
 		System.exit(1);
 	    }
 	}

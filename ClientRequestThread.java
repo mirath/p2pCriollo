@@ -8,7 +8,6 @@ public class ClientRequestThread extends Thread{
     private final byte DOWNLOAD_HEXCODE  = 0x0;
     private final byte CONSULT_HEXCODE   = 0x2;
     private final byte REACHABLE_HEXCODE = 0x3;
-//    private final byte NULL_HEXCODE      = 0x4;
     private final int  NULL_HASHID       = 0xffffffff;
     private Socket client_socket;
     private P2pProtocolHandler p2pHandler;
@@ -28,7 +27,7 @@ public class ClientRequestThread extends Thread{
      */
     @Override
     public void run(){
-	System.out.println("Servidor procesando request de un cliente");//flag
+	System.out.println("Servidor procesando request de un cliente");
         P2pRequest request = p2pHandler.getRequest(client_socket);
         
         switch(request.op_code){
@@ -48,8 +47,8 @@ public class ClientRequestThread extends Thread{
 	}
 	catch(IOException e) {}
 
-	System.out.println("Request procesado");//flag
-	System.out.println("");//flag
+	System.out.println("Request procesado");
+	System.out.println("");
 	return;
     }
 }
