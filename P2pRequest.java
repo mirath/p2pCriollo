@@ -5,12 +5,14 @@ import java.io.Serializable;
  * Abstracción de un pedido P2p
  */
 public class P2pRequest implements Serializable {
+    static final long serialVersionUID = 0;
+
     int op_code;
     int hash_id;
     byte[] data;
 	
     /**
-     *
+     * Constructor por defecto
      */
     public P2pRequest(){
 	op_code = 0;

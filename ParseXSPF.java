@@ -3,23 +3,20 @@ import java.util.*;
 import java.io.*;
 
 /**
- *
- * @author jorge
+ * Parser XSPF
  */
 public class ParseXSPF{
-    /**
-     * 
-     * @param args
-     */
     public static void main(String args[]){
 	parse(args[0]);
     }
 
     /**
-     *
-     * @param filename
-     * @return
+     * Parser de archivos XSPF
+     * @param filename Archivo XSPF que se debe parsear
+     * @return HashMap de la concatenación del título de la canción
+     *         con el autor de la canción a objetos de tipo Song
      */
+    @SuppressWarnings("unchecked")
     public static HashMap<String,Song> parse(String filename){
 	HashMap<String,Song> sl = new HashMap<String,Song>();
 
@@ -30,7 +27,7 @@ public class ParseXSPF{
 	    
 	    if(xspf.getName().compareTo("playlist") == 0){
 		//Busco el elemento trackList
-		Enumeration playlistContents = xspf.enumerateChildren();
+		Enumeration<XMLElement> playlistContents = xspf.enumerateChildren();
 		XMLElement trackList = null;
 		do{
 		    trackList = (XMLElement) playlistContents.nextElement();
@@ -43,11 +40,11 @@ public class ParseXSPF{
 		}
 
 		//Itero sobre las canciones
-		Enumeration tracks = trackList.enumerateChildren();
+		Enumeration<XMLElement> tracks = trackList.enumerateChildren();
 		while(tracks.hasMoreElements()){
 		    XMLElement track = (XMLElement)tracks.nextElement();
 		    Song s = new Song();
-		    Enumeration attrs = track.enumerateChildren();
+		    Enumeration<XMLElement> attrs = track.enumerateChildren();
 		    while(attrs.hasMoreElements()){
 			XMLElement attr = (XMLElement)attrs.nextElement();
 			get_xspf_attr(attr,s);
@@ -67,9 +64,10 @@ public class ParseXSPF{
     }
 
     /**
-     *
-     * @param attr
-     * @param s
+     * Escribe un atributo de una canción almacenado en el archivo
+     * xspf en un objeto Song
+     * @param attr Atributo XSPF
+     * @param s Objeto Song
      */
     public static void get_xspf_attr(XMLElement attr, Song s){
 	String attr_name = attr.getName();

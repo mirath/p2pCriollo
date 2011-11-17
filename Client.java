@@ -12,7 +12,6 @@ public class Client{
     private static String node = null;
     private static String download_path = null;
     private static ArrayList<Song> current_songs = new ArrayList<Song>();
-    private static P2pProtocolHandler p2pHandler = new P2pProtocolHandler();
     private static HashMap<String,Song> downloaded_songs = new HashMap<String,Song>();
 
     /**
@@ -92,7 +91,6 @@ public class Client{
                 ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port,node, "reachable", "","");
                 ans = srv.run();
-                ans = ans.replaceAll(node, "");
                 //System.out.println(ans);//flag
 		print_reachable(ans);
 		break;
@@ -254,11 +252,18 @@ public class Client{
      * @return String de espacios en blanco.
      */
     private static void print_reachable(String r){
+	if (r.length() == 0)
+	    System.out.println("No se encontraron nodos alcanzables");
+
 	String rl[] = r.split("##");
 
-	for(int i=0; i < rl.length; ++i){
-	    System.out.println(rl[i]);
-	}
+	HashSet<String> s = new HashSet<String>();
+	for(int i = 0; i < rl.length; ++i)
+	    s.add(rl[i]);
+
+	Iterator<String> i = s.iterator();
+	while(i.hasNext())
+	    System.out.println(i.next());
 
 	return;
     }
