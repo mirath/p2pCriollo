@@ -332,8 +332,8 @@ public class Client{
 
     /**
      * Parsea los argumentos del comando C
-     * @param resto
-     * @param startPoint
+     * @param resto 
+     * @param startPoint 
      * @return Objeto Song con la información de la canción
      */    
     private static String parseSearchEntry(String[] resto, int startPoint) {
