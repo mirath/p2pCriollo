@@ -3,22 +3,18 @@ import java.util.*;
 import java.io.*;
 
 /**
- *
- * @author jorge
+ * Parser XSPF
  */
 public class ParseXSPF{
-    /**
-     * 
-     * @param args
-     */
     public static void main(String args[]){
 	parse(args[0]);
     }
 
     /**
-     *
-     * @param filename
-     * @return
+     * Parser de archivos XSPF
+     * @param filename Archivo XSPF que se debe parsear
+     * @return HashMap de la concatenación del título de la canción
+     *         con el autor de la canción a objetos de tipo Song
      */
     @SuppressWarnings("unchecked")
     public static HashMap<String,Song> parse(String filename){
@@ -68,9 +64,10 @@ public class ParseXSPF{
     }
 
     /**
-     *
-     * @param attr
-     * @param s
+     * Escribe un atributo de una canción almacenado en el archivo
+     * xspf en un objeto Song
+     * @param attr Atributo XSPF
+     * @param s Objeto Song
      */
     public static void get_xspf_attr(XMLElement attr, Song s){
 	String attr_name = attr.getName();

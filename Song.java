@@ -1,31 +1,33 @@
 /**
- *
- * @author jorge
+ * Abstracción de canción
  */
 public class Song{
     /**
-     *
+     *Identificador único del nodo que tiene la canción
      */
     public String node_id;
+
     /**
-     *
+     *Localización de la canción
      */
     public String location;
+
     /**
-     *
+     *Título de la canción
      */
     public String title;
+
     /**
-     *
+     *Creador de la canción
      */
     public String creator;
     
     /**
      * 
-     * @param l
-     * @param t
-     * @param c
-     * @param n
+     * @param l Localización de la canción
+     * @param t Título de la canción
+     * @param c Creador de la canción
+     * @param n Identificador único del nodo que tiene la canción
      */
     public Song(String l, String t, String c, String n){
 	location = l.toLowerCase();
@@ -35,13 +37,13 @@ public class Song{
     }
 
     /**
-     *
+     *Constructor por defecto
      */
     public Song(){}
     
     /**
-     *
-     * @return
+     * Retorna una representación en String de esta canción
+     * @return String representativo de la canción
      */
     @Override
     public String toString() {
