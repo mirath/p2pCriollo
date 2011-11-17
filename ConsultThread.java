@@ -21,7 +21,7 @@ public class ConsultThread extends Thread {
     P2pProtocolHandler p2pHandler;
     
     /**
-     *
+     * Constructor.
      * @param i posición del arreglo respuesta que le pertenece a este hilo. 
      * @param respuesta arreglo de respuesta. El hilo escribirá su respuesta 
      * en la casilla que le corresponda.

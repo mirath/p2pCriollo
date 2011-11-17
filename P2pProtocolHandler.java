@@ -22,7 +22,7 @@ public class P2pProtocolHandler{
     private String id;
     
     /**
-     *
+     * Constructor por defecto.
      */
     public P2pProtocolHandler() {
         SongDB = null;
@@ -32,10 +32,10 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param knownNodesFilePath Localizaci髇 de los nodos conocidos
-     * @param musicLib Localizaci髇 de la librer韆
-     * @param id Identificador 鷑ico del nodo
+     * Constructor.
+     * @param knownNodesFilePath Localizaci贸n de los nodos conocidos
+     * @param musicLib Localizaci贸n de la librer铆a
+     * @param id Identificador 煤nico del nodo
      */
     public P2pProtocolHandler(String knownNodesFilePath, String musicLib,String id){
         ConsultDB = new ConcurrentHashMap<Integer,String>();
@@ -50,11 +50,25 @@ public class P2pProtocolHandler{
 	}
     }
     
+     /**
+     * 
+     * Parsea la librer铆a de m煤sica XSPF.
+     * @param musicLib ruta a la biblioteca de m煤sica.
+     * @return Un HashMap que mapea de "autor-t铆tulo" a la estructura 
+     * canci贸n. La estructura canci贸n contiene informaci贸n adicional.
+     */
     private HashMap<String,Song> parseSongFile(String musicLib){
         HashMap<String,Song> resp = ParseXSPF.parse(musicLib);
         return resp;
     }
     
+    /**
+     * Parsea el archivo de nodos conocidos.
+     * @param knownNodesFilePath ruta al archivo con los nodos conocidos por 
+     * este nodo.
+     * @return lista enlazada de direcciones IP de los nodos conocidos por
+     * este nodo.
+     */
     private ArrayList<InetAddress> parseKnownNodesFile(String knownNodesFilePath){
         ArrayList<InetAddress> Nodes = new ArrayList<InetAddress>();
         try {
@@ -77,7 +91,7 @@ public class P2pProtocolHandler{
     }
     
     /**
-     * Obtiene los datos del pedido a partir de una conecci髇 con el cliente
+     * Obtiene los datos del pedido a partir de una conexi贸n con el cliente
      * @param s Socket por donde se obtiene el pedido p2p
      * @return Objeto que contiene los datos del pedido
      */
@@ -97,8 +111,8 @@ public class P2pProtocolHandler{
     
     /**
      * Ejecuta un comando C
-     * @param req Par醡etros del comando C
-     * @param cs Socket de comunicaci髇
+     * @param req Par谩metros del comando C
+     * @param cs Socket de comunicaci贸n
      */
     public void makeConsult(P2pRequest req, Socket cs){
         // Crear comunicaci贸n con el cliente
@@ -201,9 +215,9 @@ public class P2pProtocolHandler{
     }
     
     /**
-     * Genera un string representativo de la base de datos de canciones
-     * @param nodeID Identificador 鷑ico del nodo
-     * @return String representativo de la base de datos de canciones
+     * Genera un string representativo de la base de datos de canciones.
+     * @param nodeID Identificador 煤nico del nodo.
+     * @return String representativo de la base de datos de canciones.
      */
     public String SongDbToString(String nodeID) {
         String resp = "";
@@ -220,8 +234,8 @@ public class P2pProtocolHandler{
     
     /**
      * Ejecuta un comando A
-     * @param req Par醡etros del comando A
-     * @param cs Socket de comunicaci髇
+     * @param req Par谩metros del comando A
+     * @param cs Socket de comunicaci贸n
      */
     public void makeReachable(P2pRequest req, Socket cs) {
         // Mandar respuesta al cliente
@@ -282,8 +296,8 @@ public class P2pProtocolHandler{
     
     /**
      * Ejecuta un comando D del lado del servidor
-     * @param req Par醡etros del comando D del lado del servidor
-     * @param cs Socket de comunicaci髇
+     * @param req Par谩metros del comando D del lado del servidor
+     * @param cs Socket de comunicaci贸n
      */
     public void sendSong(P2pRequest req, Socket cs) {
         // Nombre de archivo ?
@@ -315,11 +329,11 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param req
-     * @param download_path
-     * @param cs
-     * @return
+     * Permite descargar una canci贸n desde un nodo de la red. 
+     * @param req contiene informaci贸n relevante sobre la conexi贸n.
+     * @param download_path ruta donde se guarda el archivo luego de descargado.
+     * @param cs socket para establecer canal de comunicaci贸n con el servidor.
+     * @return indica falla o 茅xito en la conexi贸n.
      */
     public boolean requestSong(P2pRequest req, String download_path, Socket cs){
 	boolean result = true;
@@ -358,10 +372,12 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param req
-     * @param cs
-     * @return
+     * Env铆a una petici贸n de consulta al nodo.
+     * @param req contiene informaci贸n relevante sobre la conexi贸n.
+     * @param cs socket para establecer canal de comunicaci贸n con el servidor.
+     * @return Resultado de la consulta. Puede cantener las canciones de toda 
+     * la red o las canciones que satisfacen el criterio de b煤squeda 
+     * especificado.
      */
     public String requestConsult(P2pRequest req, Socket cs) {
         String result = null;
@@ -385,10 +401,10 @@ public class P2pProtocolHandler{
     }
     
     /**
-     *
-     * @param req
-     * @param cs
-     * @return
+     * Env铆a una petici贸n de "Nodos alcanzables" a un nodo.
+     * @param req contiene informaci贸n relevante sobre la conexi贸n.
+     * @param cs socket para establecer canal de comunicaci贸n con el servidor.
+     * @return Nodos alcanzables por el nodo al que se conecta este cliente.
      */
     public String requestReachable(P2pRequest req, Socket cs) {
         String result = null;
