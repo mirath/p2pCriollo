@@ -92,6 +92,7 @@ public class Client{
                 ServerRequest srv = new ServerRequest(client_socket, 
                                 node_port,node, "reachable", "","");
                 ans = srv.run();
+                ans = ans.replaceAll(node, "");
                 //System.out.println(ans);//flag
 		print_reachable(ans);
 		break;
@@ -184,10 +185,10 @@ public class Client{
     }
 
     /**
-     * Devuelve el número de carácteres
-     * del título con más carácteres en su nombre.
-     * @param songs Canciones que serán analizadas
-     * @return Número de carácteres del título mas largo
+     * Devuelve el nï¿½mero de carï¿½cteres
+     * del tï¿½tulo con mï¿½s carï¿½cteres en su nombre.
+     * @param songs Canciones que serï¿½n analizadas
+     * @return Nï¿½mero de carï¿½cteres del tï¿½tulo mas largo
      */
     private static int longest_title(ArrayList<Song> songs){
 	int max = 0;
@@ -200,10 +201,10 @@ public class Client{
     }
 
     /**
-     * Devuelve el número de carácteres del autor con más
-     * carácteres en su nombre.
-     * @param songs Canciones que serán analizadas
-     * @return Número de carácteres del autor mas largo
+     * Devuelve el nï¿½mero de carï¿½cteres del autor con mï¿½s
+     * carï¿½cteres en su nombre.
+     * @param songs Canciones que serï¿½n analizadas
+     * @return Nï¿½mero de carï¿½cteres del autor mas largo
      */
     private static int longest_creator(ArrayList<Song> songs){
 	int max = 0;
@@ -217,8 +218,8 @@ public class Client{
 
     /**
      *
-     * @param n Número a procesar
-     * @return Número de dígitos del número
+     * @param n Nï¿½mero a procesar
+     * @return Nï¿½mero de dï¿½gitos del nï¿½mero
      */
     private static int number_of_digits(int n){
 	if (n == 0)
@@ -236,7 +237,7 @@ public class Client{
 
     /**
      * Genera un String de espacios en blanco
-     * @param n Número de espacios en blanco
+     * @param n Nï¿½mero de espacios en blanco
      * @return String de espacios en blanco
      */
     private static String tab(int n){
@@ -249,7 +250,7 @@ public class Client{
 
     /**
      * Genera un String de espacios en blanco
-     * @param n Número de espacios en blanco
+     * @param n Nï¿½mero de espacios en blanco
      * @return String de espacios en blanco
      */
     private static void print_reachable(String r){
@@ -270,7 +271,7 @@ public class Client{
     }
     
     /**
-     * Imprime las canciones que resultaron de la última consulta
+     * Imprime las canciones que resultaron de la ï¿½ltima consulta
      */
     private static void print_songs(){
 	if (current_songs.size() <= 0){
@@ -322,8 +323,8 @@ public class Client{
     /**
      * Genera un objeto Song a partir de una entrada del resultado
      * del comando C
-     * @param s Canción a parsear
-     * @return Objeto Song con la información de la canción
+     * @param s Canciï¿½n a parsear
+     * @return Objeto Song con la informaciï¿½n de la canciï¿½n
      */
     private static Song parse_song(String s){
 	Song res = new Song();
@@ -341,7 +342,7 @@ public class Client{
      * Parsea los argumentos del comando C
      * @param resto 
      * @param startPoint 
-     * @return Objeto Song con la información de la canción
+     * @return Objeto Song con la informaciï¿½n de la canciï¿½n
      */    
     private static String parseSearchEntry(String[] resto, int startPoint) {
         String expr = new String();
@@ -355,8 +356,8 @@ public class Client{
     }
 
     /**
-     * Parsea las opciones de la línea de comandos -p, -n y -d
-     * @param args Línea de comandos
+     * Parsea las opciones de la lï¿½nea de comandos -p, -n y -d
+     * @param args Lï¿½nea de comandos
      */
     private static void set_params(String args[]){
 	char op = '\0';

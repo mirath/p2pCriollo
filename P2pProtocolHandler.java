@@ -12,15 +12,11 @@ import java.util.regex.Pattern;
  * Manejador del protocolo p2p
  */
 public class P2pProtocolHandler{
-//    private final byte DOWNLOAD_HEXCODE  = 0x0;
-//    private final byte CONSULT_HEXCODE   = 0x2;
-//    private final byte REACHABLE_HEXCODE = 0x3;
-//    private final byte NULL_HEXCODE      = 0x4;
     private final int  NULL_HASHID       = 0xffffffff;
     private final int  APP_PORT          = 5947;
     // Estructuras de control
     private static HashMap<String,Song> SongDB;
-    private static ArrayList<InetAddress> NodeDB; 
+    private static ArrayList<InetAddress> NodeDB;
     private static ConcurrentHashMap<Integer,String> ConsultDB;
     private static String host;
     private String id;
@@ -60,13 +56,16 @@ public class P2pProtocolHandler{
     }
     
     private ArrayList<InetAddress> parseKnownNodesFile(String knownNodesFilePath){
-        ArrayList<InetAddress> Nodes = new ArrayList<InetAddress>(); 
+        ArrayList<InetAddress> Nodes = new ArrayList<InetAddress>();
         try {
-        BufferedReader nodeFile = new BufferedReader(new
-                FileReader(knownNodesFilePath));
-        String line;
-        while ((line = nodeFile.readLine()) != null) 
-            Nodes.add(InetAddress.getByName(line));
+            BufferedReader nodeFile = new BufferedReader(new
+                    FileReader(knownNodesFilePath));
+            String line;
+            while ((line = nodeFile.readLine()) != null) {
+                if (line.length() != 0)
+                    Nodes.add(InetAddress.getByName(line));
+            }
+       
         }
         catch(FileNotFoundException fnf) {
             System.out.println("Error al abrir archivo: "+fnf);
@@ -126,7 +125,7 @@ public class P2pProtocolHandler{
                 String[] st = tipoReq.split("@@");
                 String tipo = st[0];
                 String expr = null;
-                if (st.length > 1) 
+                if (st.length > 1)
                     expr = st[1].toLowerCase();
                 
                 if (st[0].compareTo("W") == 0) {
@@ -144,7 +143,8 @@ public class P2pProtocolHandler{
                         m = regex.matcher(sg.title);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
-                                    (sg.toString()+"@@"+P2pProtocolHandler.host+"@@"+this.id+"##");
+                                    (sg.toString()+"@@"+
+                                    P2pProtocolHandler.host+"@@"+this.id+"##");
                         }
                         m.reset();
                     }
@@ -160,7 +160,8 @@ public class P2pProtocolHandler{
                         m = regex.matcher(sg.creator);
                         if (m.find()) { // Hubo match
                             resultadoFinal = resultadoFinal.concat
-                                    (sg.toString()+"@@"+P2pProtocolHandler.host+"@@"+this.id+"##");
+                                    (sg.toString()+"@@"+
+                                    P2pProtocolHandler.host+"@@"+this.id+"##");
                         }
                         m.reset();
                     }
@@ -177,7 +178,7 @@ public class P2pProtocolHandler{
                     ct[i].start();
                 }
                 // Espero que todos los threads terminen su ejecución
-                for(int i = 0; i < NodeDB.  size(); i++) {
+                for(int i = 0; i < NodeDB.size(); i++) {
                     ct[i].join();
                 }
                 // Colocar todos los resultados en un solo String
@@ -185,7 +186,7 @@ public class P2pProtocolHandler{
                     resultadoFinal = resultadoFinal.concat(respuesta[i]);
                 }
                 // Construir respuesta
-                P2pRequest respFinal = new P2pRequest(NULL_HASHID,0, 
+                P2pRequest respFinal = new P2pRequest(NULL_HASHID,0,
                         resultadoFinal.getBytes());
                 // Mandar respuesta
                 os.writeObject(respFinal);
@@ -214,7 +215,8 @@ public class P2pProtocolHandler{
         Iterator<Song> it = s.iterator();
         while (it.hasNext()) {
             Song se = it.next();
-            resp = resp.concat(se.toString()+"@@"+P2pProtocolHandler.host+"@@"+nodeID+"##");
+            resp = resp.concat(se.toString()+"@@"+
+                    P2pProtocolHandler.host+"@@"+nodeID+"##");
         }
         return resp;
     }
@@ -228,17 +230,57 @@ public class P2pProtocolHandler{
         // Mandar respuesta al cliente
         String resp = "";
         try {
-            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
-            for(int i = 0; i < NodeDB.size(); i++) {
-                resp = resp.concat(NodeDB.get(i).getHostName()+"##");
+            ObjectOutputStream os = new ObjectOutputStream
+                    (cs.getOutputStream());
+            // Consulta repetida ?
+            if (!ConsultDB.isEmpty() && ConsultDB.containsKey(req.hash_id)) {
+                // No atiendo la consulta porque ya lo hice en el pasado
+                String emptyString = "";
+                P2pRequest nulAnswer = new P2pRequest(NULL_HASHID,0,
+                        emptyString.getBytes());
+                os.writeObject(nulAnswer);
+                os.close();
+                return;
             }
-            P2pRequest ans = new P2pRequest(NULL_HASHID,0,resp.getBytes());
-            os.writeObject(ans);
-            os.close();
+            else {
+                // Agregar hash de consulta a mi base de datos
+                ConsultDB.put(req.hash_id, "");
+                for(int i = 0; i < NodeDB.size(); i++) {
+                    resp = resp.concat(NodeDB.get(i).getHostName()+"##");
+                }
+                // Preparar estructura de respuestas
+                String[] respuesta = new String[NodeDB.size()];
+                // Hacer consulta a mis nodos vecinos.
+                // Arreglo de threads
+                ConsultThread[] ct = new ConsultThread[NodeDB.size()];
+                // Crear cada uno de los threads y ejecutarlos.
+                for(int i = 0; i < NodeDB.size(); i++) {
+                    ct[i] = new ConsultThread(i, respuesta, NodeDB.get(i),
+                            req, APP_PORT, this);
+                    ct[i].start();
+                }
+                // Espero que todos los threads terminen su ejecución
+                for(int i = 0; i < NodeDB.  size(); i++) {
+                    ct[i].join();
+                }
+                // Colocar todos los resultados en un solo String
+                for(int i = 0; i < NodeDB.size(); i++) {
+                    resp = resp.concat(respuesta[i]);
+                }
+                // Construir respuesta
+                P2pRequest ans = new P2pRequest(NULL_HASHID,0,resp.getBytes());
+                // Mandar respuesta
+                os.writeObject(ans);
+                os.close();
+            }
         }
         catch(IOException e) {
             System.out.println("Error I/O: "+e);
         }
+        catch(InterruptedException ie) {
+            System.out.println("Interrupted exception: "+ie);
+        }
+        
     }
     
     /**
@@ -253,17 +295,18 @@ public class P2pProtocolHandler{
         String rutaArchivo = SongDB.get(nombreMP3).location;
         // Cargar archivo
         try {
-	    File cancion = new File(rutaArchivo);
-	    FileInputStream fin = new FileInputStream(cancion);
-	    byte contenidoMP3[] = new byte[(int) cancion.length()];
-	    fin.read(contenidoMP3);
-	    // Preparar P2pRequest con respuesta
-	    P2pRequest respuesta = new P2pRequest(NULL_HASHID,0,contenidoMP3);
-	    // Mandar respuesta al cliente
-	    ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
-	    os.writeObject(respuesta);
-	    os.close();
-	    fin.close();
+            File cancion = new File(rutaArchivo);
+            FileInputStream fin = new FileInputStream(cancion);
+            byte contenidoMP3[] = new byte[(int) cancion.length()];
+            fin.read(contenidoMP3);
+            // Preparar P2pRequest con respuesta
+            P2pRequest respuesta = new P2pRequest(NULL_HASHID,0,contenidoMP3);
+            // Mandar respuesta al cliente
+            ObjectOutputStream os = new ObjectOutputStream
+                    (cs.getOutputStream());
+            os.writeObject(respuesta);
+            os.close();
+            fin.close();
         }
         catch(FileNotFoundException fnf) {
             System.out.println("Error: "+fnf);
@@ -290,7 +333,8 @@ public class P2pProtocolHandler{
 	}
         try {
             // Construir salida hacia el servidor
-            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            ObjectOutputStream os = new ObjectOutputStream
+                    (cs.getOutputStream());
             // Mandar petición al servidor
             os.writeObject(req);
             // Ahora esperar respuesta con archivo
@@ -353,7 +397,8 @@ public class P2pProtocolHandler{
         String result = null;
         // Construir salida hacia el servidor
         try {
-            ObjectOutputStream os = new ObjectOutputStream(cs.getOutputStream());
+            ObjectOutputStream os = new ObjectOutputStream
+                    (cs.getOutputStream());
             // Mandar petición al servidor
             os.writeObject(req);
             // Ahora esperar respuesta con string

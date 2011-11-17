@@ -79,7 +79,11 @@ public class ServerRequest {
         }
         else if (operation.compareTo("reachable") == 0) {
             // Construir request
-            req = new P2pRequest(REACHABLE_HEXCODE,NULL_HASHID,null);
+            Random gen = new Random();
+            String hash = Integer.toString(gen.nextInt()) +
+                    client_socket.getInetAddress().getHostAddress() +
+                    System.currentTimeMillis();
+            req = new P2pRequest(REACHABLE_HEXCODE,hash.hashCode(),null);
             ans = h.requestReachable(req, client_socket);
         }
         close_socket(client_socket);
