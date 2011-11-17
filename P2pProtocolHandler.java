@@ -105,7 +105,9 @@ public class P2pProtocolHandler{
         catch (ClassNotFoundException csnf) {
             System.out.println("Error: "+csnf);
         }
-        catch (IOException e ) {}
+        catch (IOException e ) {
+            System.out.println("I/O Error: "+e);
+	}
         return req;
     }
     
