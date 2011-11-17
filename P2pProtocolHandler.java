@@ -190,12 +190,36 @@ public class P2pProtocolHandler{
             for(int i = 0; i < NodeDB.size(); i++) {
                 resp = resp.concat(NodeDB.get(i).getHostName()+"##");
             }
+            // Preparar estructura de respuestas
+            String[] respuesta = new String[NodeDB.size()];
+            // Hacer consulta a mis nodos vecinos.
+            // Arreglo de threads
+            ConsultThread[] ct = new ConsultThread[NodeDB.size()];
+            // Crear cada uno de los threads y ejecutarlos.
+            for(int i = 0; i < NodeDB.size(); i++) {
+                ct[i] = new ConsultThread(i, respuesta, NodeDB.get(i),
+                        req, APP_PORT, this);
+                ct[i].start();
+            }
+            // Espero que todos los threads terminen su ejecución
+            for(int i = 0; i < NodeDB.  size(); i++) {
+                ct[i].join();
+            }
+            // Colocar todos los resultados en un solo String
+            for(int i = 0; i < NodeDB.size(); i++) {
+                resp = resp.concat(respuesta[i]);
+            }
+            // Construir respuesta
             P2pRequest ans = new P2pRequest(NULL_HASHID,0,resp.getBytes());
+            // Mandar respuesta
             os.writeObject(ans);
             os.close();
         }
         catch(IOException e) {
             System.out.println("Error I/O: "+e);
+        }
+        catch(InterruptedException ie) {
+            System.out.println("Interrupted exception: "+ie);
         }
     }
     
