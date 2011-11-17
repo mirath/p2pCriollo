@@ -20,6 +20,7 @@ public class ParseXSPF{
      * @param filename
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static HashMap<String,Song> parse(String filename){
 	HashMap<String,Song> sl = new HashMap<String,Song>();
 
@@ -30,7 +31,7 @@ public class ParseXSPF{
 	    
 	    if(xspf.getName().compareTo("playlist") == 0){
 		//Busco el elemento trackList
-		Enumeration playlistContents = xspf.enumerateChildren();
+		Enumeration<XMLElement> playlistContents = xspf.enumerateChildren();
 		XMLElement trackList = null;
 		do{
 		    trackList = (XMLElement) playlistContents.nextElement();
@@ -43,11 +44,11 @@ public class ParseXSPF{
 		}
 
 		//Itero sobre las canciones
-		Enumeration tracks = trackList.enumerateChildren();
+		Enumeration<XMLElement> tracks = trackList.enumerateChildren();
 		while(tracks.hasMoreElements()){
 		    XMLElement track = (XMLElement)tracks.nextElement();
 		    Song s = new Song();
-		    Enumeration attrs = track.enumerateChildren();
+		    Enumeration<XMLElement> attrs = track.enumerateChildren();
 		    while(attrs.hasMoreElements()){
 			XMLElement attr = (XMLElement)attrs.nextElement();
 			get_xspf_attr(attr,s);

@@ -1,14 +1,18 @@
 JAVAC = gcj
-OPS = -g -C
+OPS = -C
 LINK_OPS =
 NANOXMLPATH = redes/nanoxml/java/nanoxml-lite-2.2.3.jar
 
 PARSER_OBJS = ParseXSPF.class Song.class $(NANOXMLPATH)
-NODE_OBJS = P2pRequest.class P2pProtocolHandler.class ConsultThread.class ClientRequestThread.class Node.class $(PARSER_OBJS)
-CLIENT_OBJS = Client.class ConsultThread.class P2pProtocolHandler.class P2pRequest.class ServerRequest.class $(PARSER_OBJS)
+NODE_OBJS = $(PARSER_OBJS) P2pRequest.class P2pProtocolHandler.class ConsultThread.class ClientRequestThread.class Node.class 
+CLIENT_OBJS = $(PARSER_OBJS) Client.class ConsultThread.class P2pProtocolHandler.class P2pRequest.class ServerRequest.class
 
-all:
-	echo -e 'Uso: make <client|node|parser>'
+use:
+	echo -e 'Uso: make <client|node|all>'
+
+all: $(CLIENT_OBJS) $(NODE_OBJS)
+	$(JAVAC) --main=Client -o Client $(CLIENT_OBJS)
+	$(JAVAC) --main=Node -o Node $(NODE_OBJS)
 
 client: $(CLIENT_OBJS)
 	$(JAVAC) --main=Client -o Client $(CLIENT_OBJS)

@@ -100,7 +100,6 @@ public class P2pProtocolHandler{
      * @param req Parámetros del comando C
      * @param cs Socket de comunicación
      */
-    @SuppressWarnings({"static-access", "static-access"})
     public void makeConsult(P2pRequest req, Socket cs){
         // Crear comunicaciÃ³n con el cliente
         try {
@@ -123,7 +122,6 @@ public class P2pProtocolHandler{
                 // Verificar tipo de consulta: Autor, Titulo o todas
                 String tipoReq = new String(req.data);
                 String[] st = tipoReq.split("@@");
-                String tipo = st[0];
                 String expr = null;
                 if (st.length > 1)
                     expr = st[1].toLowerCase();
@@ -207,7 +205,6 @@ public class P2pProtocolHandler{
      * @param nodeID Identificador único del nodo
      * @return String representativo de la base de datos de canciones
      */
-    @SuppressWarnings("static-access")
     public String SongDbToString(String nodeID) {
         String resp = "";
         // Obtener todas las canciones de SongDB
