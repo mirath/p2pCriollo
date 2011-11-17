@@ -185,10 +185,10 @@ public class Client{
     }
 
     /**
-     * Devuelve el n�mero de car�cteres
-     * del t�tulo con m�s car�cteres en su nombre.
-     * @param songs Canciones que ser�n analizadas
-     * @return N�mero de car�cteres del t�tulo mas largo
+     * Devuelve el número de caracteres
+     * del título con más carácteres en su nombre.
+     * @param songs Canciones que serán analizadas.
+     * @return Número de carácteres del título mas largo.
      */
     private static int longest_title(ArrayList<Song> songs){
 	int max = 0;
@@ -201,10 +201,10 @@ public class Client{
     }
 
     /**
-     * Devuelve el n�mero de car�cteres del autor con m�s
-     * car�cteres en su nombre.
-     * @param songs Canciones que ser�n analizadas
-     * @return N�mero de car�cteres del autor mas largo
+     * Devuelve el número de caracteres del autor con mas
+     * caracteres en su nombre.
+     * @param songs Canciones que serán analizadas.
+     * @return Número de caracteres del autor mas largo.
      */
     private static int longest_creator(ArrayList<Song> songs){
 	int max = 0;
@@ -218,8 +218,8 @@ public class Client{
 
     /**
      *
-     * @param n N�mero a procesar
-     * @return N�mero de d�gitos del n�mero
+     * @param n Número a procesar.
+     * @return Número de dígitos del número.
      */
     private static int number_of_digits(int n){
 	if (n == 0)
@@ -236,9 +236,9 @@ public class Client{
     }
 
     /**
-     * Genera un String de espacios en blanco
-     * @param n N�mero de espacios en blanco
-     * @return String de espacios en blanco
+     * Genera un String de espacios en blanco.
+     * @param n Número de espacios en blanco.
+     * @return String de espacios en blanco.
      */
     private static String tab(int n){
 	String tab = "";
@@ -249,9 +249,9 @@ public class Client{
     }
 
     /**
-     * Genera un String de espacios en blanco
-     * @param n N�mero de espacios en blanco
-     * @return String de espacios en blanco
+     * Genera un String de espacios en blanco.
+     * @param n Número de espacios en blanco.
+     * @return String de espacios en blanco.
      */
     private static void print_reachable(String r){
 	String rl[] = r.split("##");
@@ -264,7 +264,7 @@ public class Client{
     }
     
     /**
-     * Imprime las canciones que resultaron de la �ltima consulta
+     * Imprime las canciones que resultaron de la última consulta.
      */
     private static void print_songs(){
 	if (current_songs.size() <= 0){
@@ -292,9 +292,9 @@ public class Client{
     }
 
     /**
-     * Parsea el resultado del comando C
-     * @param ss resultado del comando C
-     * @return Canciones parseadas
+     * Parsea el resultado del comando C.
+     * @param ss resultado del comando C.
+     * @return Canciones parseadas.
      */
     private static ArrayList<Song> parse_songs(String ss){
 	ArrayList<Song> songs = new ArrayList<Song>();
@@ -315,9 +315,9 @@ public class Client{
 
     /**
      * Genera un objeto Song a partir de una entrada del resultado
-     * del comando C
-     * @param s Canci�n a parsear
-     * @return Objeto Song con la informaci�n de la canci�n
+     * del comando C.
+     * @param s Canción a parsear.
+     * @return Objeto Song con la información de la canción.
      */
     private static Song parse_song(String s){
 	Song res = new Song();
@@ -333,9 +333,9 @@ public class Client{
 
     /**
      * Parsea los argumentos del comando C
-     * @param resto 
-     * @param startPoint 
-     * @return Objeto Song con la informaci�n de la canci�n
+     * @param resto contiene la información de la consulta.
+     * @param startPoint índice desde donde se itera para extraer consulta.
+     * @return Objeto Song con la información de la canción.
      */    
     private static String parseSearchEntry(String[] resto, int startPoint) {
         String expr = new String();
@@ -349,8 +349,8 @@ public class Client{
     }
 
     /**
-     * Parsea las opciones de la l�nea de comandos -p, -n y -d
-     * @param args L�nea de comandos
+     * Parsea las opciones de la línea de comandos -p, -n y -d.
+     * @param args Línea de comandos.
      */
     private static void set_params(String args[]){
 	char op = '\0';
@@ -369,7 +369,7 @@ public class Client{
 		download_path = args[i+1];
 		break;
 	    default:
-		System.out.println("Opcion incorrecta");
+		System.out.println("Opción incorrecta");
 		System.exit(1);
 		break;
 	    }

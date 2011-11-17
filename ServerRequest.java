@@ -4,7 +4,8 @@ import java.net.*;
 import java.util.Random;
 
 /**
- *
+ * Esta clase se encarga de administrar las peticiones del cliente hacia los 
+ * nodos.
  */
 public class ServerRequest {
     private final byte DOWNLOAD_HEXCODE  = 0x0;
@@ -19,10 +20,10 @@ public class ServerRequest {
     byte[] data;
     
     /**
-     *
-     * @param cs
-     * @param operation
-     * @param data
+     * Constructor por defecto.
+     * @param cs socket para establecer canal de comunicación con el servidor.
+     * @param operation tipo de operación que se desea realizar.
+     * @param data datos que se desean enviar al servidor.
      */
     public ServerRequest(Socket cs, String operation, String data){
         client_socket = cs;
@@ -32,13 +33,13 @@ public class ServerRequest {
     }
     
     /**
-     *
-     * @param cs
-     * @param nodePort
-     * @param node
-     * @param operation
-     * @param data
-     * @param download_path
+     * Constructor.
+     * @param cs socket para establecer canal de comunicación con el servidor.
+     * @param nodePort puerto del nodo con el que se establece la conexión.
+     * @param node identificador del nodo en la red.
+     * @param operation tipo de operación que se quiere realizar.
+     * @param data datos que se desean enviar al servidor.
+     * @param download_path ruta a la carpeta de descargas.
      */
     public ServerRequest(Socket cs, int nodePort, String node, String operation,
 			 String data, String download_path){
@@ -50,8 +51,10 @@ public class ServerRequest {
     }
     
     /**
-     *
-     * @return
+     * En base a la operación que el cliente ordena realizar, esta función 
+     * construye una petición y la ejecuta. 
+     * @return información proveniente del nodo. Puede contener las canciones. 
+     * 
      */
     public String run(){
         String ans = null;
@@ -90,6 +93,12 @@ public class ServerRequest {
         return ans;
     }
     
+    /**
+     * Crea el socket de comunicación entre el cliente y el servidor.
+     * @param node_addr identificador del servidor en la red.
+     * @param node_port número de puerto al cuál se conecta este cliente.
+     * @return socket de comunicación establecido.
+     */
     private static Socket bind_to_server(String node_addr, int node_port){
         InetAddress addr;
         Socket s = null;
@@ -114,6 +123,10 @@ public class ServerRequest {
         return s;
     }
     
+    /**
+     * Cierra conexión.
+     * @param client_socket socket de comunicación.
+     */
     private static void close_socket(Socket client_socket){
         try{
             client_socket.close();
