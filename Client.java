@@ -3,7 +3,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- *
+ *Clase del cliente
  */
 public class Client{
 
@@ -183,16 +183,28 @@ public class Client{
 	}
     }
 
+    /**
+     * Devuelve el número de carácteres
+     * del título con más carácteres en su nombre.
+     * @param songs Canciones que serán analizadas
+     * @return Número de carácteres del título mas largo
+     */
     private static int longest_title(ArrayList<Song> songs){
 	int max = 0;
 	for (int i = 0; i < songs.size(); ++i){
 	    int aux = songs.get(i).title.length();
-	    if ( aux > max)
+	    if (aux > max)
 		max = aux; 
 	}
 	return max;
     }
 
+    /**
+     * Devuelve el número de carácteres del autor con más
+     * carácteres en su nombre.
+     * @param songs Canciones que serán analizadas
+     * @return Número de carácteres del autor mas largo
+     */
     private static int longest_creator(ArrayList<Song> songs){
 	int max = 0;
 	for (int i = 0; i < songs.size(); ++i){
@@ -203,6 +215,11 @@ public class Client{
 	return max;
     }
 
+    /**
+     *
+     * @param n Número a procesar
+     * @return Número de dígitos del número
+     */
     private static int number_of_digits(int n){
 	if (n == 0)
 	    return 1;
@@ -217,6 +234,11 @@ public class Client{
 	return digits;
     }
 
+    /**
+     * Genera un String de espacios en blanco
+     * @param n Número de espacios en blanco
+     * @return String de espacios en blanco
+     */
     private static String tab(int n){
 	String tab = "";
 	for(int i = 0; i < n; ++i){
@@ -225,6 +247,11 @@ public class Client{
 	return tab;
     }
 
+    /**
+     * Genera un String de espacios en blanco
+     * @param n Número de espacios en blanco
+     * @return String de espacios en blanco
+     */
     private static void print_reachable(String r){
 	String rl[] = r.split("##");
 
@@ -234,7 +261,10 @@ public class Client{
 
 	return;
     }
-
+    
+    /**
+     * Imprime las canciones que resultaron de la última consulta
+     */
     private static void print_songs(){
 	if (current_songs.size() <= 0){
 	    return;
@@ -260,6 +290,11 @@ public class Client{
 	return;
     }
 
+    /**
+     * Parsea el resultado del comando C
+     * @param ss resultado del comando C
+     * @return Canciones parseadas
+     */
     private static ArrayList<Song> parse_songs(String ss){
 	ArrayList<Song> songs = new ArrayList<Song>();
 
@@ -277,6 +312,12 @@ public class Client{
 	return songs;
     }
 
+    /**
+     * Genera un objeto Song a partir de una entrada del resultado
+     * del comando C
+     * @param s Canción a parsear
+     * @return Objeto Song con la información de la canción
+     */
     private static Song parse_song(String s){
 	Song res = new Song();
 
@@ -288,7 +329,13 @@ public class Client{
 
 	return res;
     }
-    
+
+    /**
+     * Parsea los argumentos del comando C
+     * @param resto
+     * @param startPoint
+     * @return Objeto Song con la información de la canción
+     */    
     private static String parseSearchEntry(String[] resto, int startPoint) {
         String expr = new String();
         int i = startPoint;
@@ -300,6 +347,10 @@ public class Client{
         return expr;
     }
 
+    /**
+     * Parsea las opciones de la línea de comandos -p, -n y -d
+     * @param args Línea de comandos
+     */
     private static void set_params(String args[]){
 	char op = '\0';
 	int i = 0;
@@ -330,6 +381,9 @@ public class Client{
 	    System.out.println("Uso: Cliente -p <puerto> -n <nodo> [-d <directorio de descargas>]");
 	    System.exit(1);	    
 	}
+
+	if(download_path == null)
+	    download_path = ".";
     }
 
     private static int max(int a, int b){
