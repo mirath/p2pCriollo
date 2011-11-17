@@ -96,15 +96,15 @@ public class ServerRequest {
             s = new Socket(addr,node_port);
         }
         catch(UnknownHostException e){
-            System.out.println("Host "+node_addr+" no encontrado");
+            System.out.println("Host "+node_addr+" no encontrado: "+e);
             System.exit(1);
         }
         catch(SecurityException e){
-            System.out.println("SecurityException");
+            System.out.println("SecurityException: "+e);
             System.exit(1);
         }
         catch(IOException e){
-            System.out.println("Error creando el socket");
+            System.out.println("Error creando el socket: "+e);
             System.exit(1);
         }
         

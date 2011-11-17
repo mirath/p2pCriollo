@@ -4,7 +4,6 @@ import java.util.*;
 
 /**
  *
- * @author jorge
  */
 public class Client{
 
