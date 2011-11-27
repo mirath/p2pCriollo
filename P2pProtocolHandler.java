@@ -258,6 +258,10 @@ public class P2pProtocolHandler{
             else {
                 // Agregar hash de consulta a mi base de datos
                 ConsultDB.put(req.hash_id, "");
+                // Agregar mi nombre
+                resp = resp.concat(
+                        (InetAddress.getByName(this.id)).getHostName()+"##");
+                // Agregar nombre de nodos vecinos.
                 for(int i = 0; i < NodeDB.size(); i++) {
                     resp = resp.concat(NodeDB.get(i).getHostName()+"##");
                 }

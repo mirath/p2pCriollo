@@ -72,11 +72,8 @@ public class ParseXSPF{
      */
     public static void get_xspf_attr(XMLElement attr, Song s){
 	String attr_name = attr.getName();
-	
-	if (attr_name.compareTo("location") == 0){
-	    s.location = attr.getContent().toLowerCase();
-	}
-	else if (attr_name.compareTo("title") == 0){
+
+	if (attr_name.compareTo("title") == 0){
 	    s.title = attr.getContent().toLowerCase();
 	}
 	else if (attr_name.compareTo("creator") == 0){
